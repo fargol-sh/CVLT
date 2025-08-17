@@ -2,6 +2,7 @@
 # Python / Flask
 # =========================
 /backend/voices/*
+voices/
 __pycache__/
 *.py[cod]
 *.pyo
