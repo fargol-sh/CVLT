@@ -14,7 +14,40 @@ TARGET_WORDS = {
         'سنجاب', 'کلم']
 }
 
-MAX_FILE_SIZE_MB = 5  # محدودیت حجم فایل به 10 مگابایت
+MAX_FILE_SIZE_MB = 5
+ALLOWED_EXTENSIONS = {'mp3', 'm4a', 'wav', 'ogg', 'webm'}
+
+
+def allowed_upload(filename, mimetype=None):
+    """Check if uploaded file has a valid extension or mimetype"""
+    if not filename:
+        return False
+    ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+    if ext in ALLOWED_EXTENSIONS:
+        return True
+    if mimetype:
+        if any(fmt in mimetype for fmt in ['wav', 'mpeg', 'ogg', 'webm', 'mp3']):
+            return True
+    return False
+
+
+def _infer_extension(filename, mimetype):
+    """Infer correct extension from filename or mimetype (fallback = wav)"""
+    if filename and '.' in filename:
+        return filename.rsplit('.', 1)[-1].lower()
+    if mimetype:
+        if 'wav' in mimetype:
+            return 'wav'
+        if 'webm' in mimetype:
+            return 'webm'
+        if 'ogg' in mimetype:
+            return 'ogg'
+        if 'mpeg' in mimetype or 'mp3' in mimetype:
+            return 'mp3'
+        if 'm4a' in mimetype:
+            return 'm4a'
+    return 'wav'  # fallback default
+
 
 def clean_old_files(folder_path, keep_last=3):
     """Keep only the last `keep_last` files in folder"""
@@ -27,55 +60,61 @@ def clean_old_files(folder_path, keep_last=3):
     for old_file in files[:-keep_last]:
         os.remove(old_file)
 
-def save_and_convert_audio(audio_file, username, test_number, round_number):
+
+def save_and_keep_original(audio_file, username, test_number, round_number):
     """
-    Save uploaded audio and convert to WAV if needed.
-    Files saved under voices/username/test_X/round_Y/
-    Only last 2 files for each round are kept.
-    Max file size: 5 MB
+    Save uploaded audio exactly as sent (m4a, wav, mp3, ogg, webm).
+    Keep only last 2 files in each round.
     """
-    # بررسی حجم فایل
+    # check file size
     audio_file.seek(0, os.SEEK_END)
     file_size_mb = audio_file.tell() / (1024 * 1024)
     audio_file.seek(0)
     if file_size_mb > MAX_FILE_SIZE_MB:
         return None, f"حجم فایل از {MAX_FILE_SIZE_MB} مگابایت بیشتر است"
 
-    audio_format = audio_file.filename.split('.')[-1]
+    # determine extension
+    ext = _infer_extension(audio_file.filename, audio_file.mimetype)
     save_directory = os.path.join('voices', username, f'test_{test_number}', f'round_{round_number}')
     os.makedirs(save_directory, exist_ok=True)
 
-    # ذخیره فایل اصلی
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_path = os.path.join(save_directory, f"{timestamp}.{audio_format}")
+    save_path = os.path.join(save_directory, f"{timestamp}.{ext}")
     audio_file.save(save_path)
 
-    # تبدیل به WAV در صورت نیاز
-    if audio_format in ['m4a', 'mp3']:
-        audio_content = AudioSegment.from_file(save_path, format=audio_format)
-        audio_content = audio_content.set_frame_rate(16000).set_channels(1)
-        wav_save_path = os.path.splitext(save_path)[0] + '.wav'
-        audio_content.export(wav_save_path, format='wav')
-        save_path = wav_save_path
-
-    # فقط 2 فایل آخر نگه داشته شود
     clean_old_files(save_directory, keep_last=2)
 
     return save_path, None
+
 
 def recognize_audio(file_path):
     """Transcribe audio file to text (Farsi)"""
     recognizer = sr.Recognizer()
     text = ""
     try:
-        with sr.AudioFile(file_path) as source:
+        # if not wav, convert temporarily
+        ext = file_path.rsplit('.', 1)[-1].lower()
+        wav_path = file_path
+        if ext != 'wav':
+            tmp_path = os.path.splitext(file_path)[0] + "_tmp.wav"
+            audio_content = AudioSegment.from_file(file_path, format=ext)
+            audio_content = audio_content.set_frame_rate(16000).set_channels(1)
+            audio_content.export(tmp_path, format='wav')
+            wav_path = tmp_path
+
+        with sr.AudioFile(wav_path) as source:
             audio_content = recognizer.record(source)
             results = recognizer.recognize_google(audio_content, language="fa-IR", show_all=True)
             if len(results) > 0:
                 text = " ".join([alt["transcript"] for alt in results["alternative"]])
+
+        if wav_path != file_path and os.path.exists(wav_path):
+            os.remove(wav_path)
+
     except sr.UnknownValueError:
         return None
     return text
+
 
 def calculate_score(transcribed_words, test_number):
     """Compare words with target list and return score, correct, and incorrect words"""
