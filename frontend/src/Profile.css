@@ -1,0 +1,42 @@
+.profile {
+  background-color: #d5deed;
+  color: #2d4059;
+}
+
+.tableCustom {
+  border-radius: 10px !important;
+}
+
+.sidebar {
+  background-color: #f9f9f9;
+}
+
+.profileImg {
+  height: 9%;
+  padding: 5%;
+  border-radius: 90%;
+  box-shadow: #2d40595a 0px 5px 15px;
+}
+
+.rdt_Table {
+  padding: 3% 5%;
+}
+
+.btn-search {
+  background-color: #ffffff;
+  color: #8ec2f2 !important;
+  border: #8ec2f2 solid 2px;
+}
+
+.btn-search:hover {
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.btn-search:focus {
+  box-shadow: none;
+}
+
+.search-input:focus {
+  box-shadow: none;
+}

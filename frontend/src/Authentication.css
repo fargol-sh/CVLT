@@ -1,0 +1,137 @@
+.authentication {
+  height: 90%;
+  width: 100%;
+}
+
+.authentication .row {
+  padding: 5% 10% 5% 10%;
+}
+
+.authentication #register .row {
+  padding-bottom: 15%;
+}
+
+.authentication form img {
+  padding-bottom: 15%;
+}
+
+.authentication form {
+  padding: 10% 10% 5% 10%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  color: #2d4059;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.authentication .half {
+  background: no-repeat url(../public/images/Login.png);
+  background-size: cover;
+}
+
+.half_title {
+  color: white;
+  margin: 3rem 3rem;
+  text-align: center;
+}
+
+.authentication .halfForget {
+  background: no-repeat url(../public/images/Forget.png);
+  background-size: cover;
+}
+
+.halfForget_title {
+  color: white;
+  margin: 2rem 3rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.authentication .halfRegister {
+  background: no-repeat url(../public/images/Register.png);
+  background-size: cover;
+  margin-right: 1%;
+}
+
+.halfRegister_title {
+  color: white;
+  margin: 4rem 3rem 0 3rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.authentication #PasswordHelp {
+  color: #8ec2f2;
+  font-size: 11px;
+}
+
+.authentication #PasswordHelp a,
+.authentication #PasswordHelp a:visited {
+  color: #8ec2f2;
+  text-decoration: none !important;
+  transition: all .2s;
+}
+
+.authentication #PasswordHelp a:hover {
+  font-size: 11.5px;
+}
+
+.authentication button {
+  background-color: #8ec2f2;
+  color: #ffffff !important;
+  border: #8ec2f2;
+  font-size: 18px;
+  padding: 1% 15%;
+}
+
+.authentication button:hover {
+  background-color: #8ec2f2;
+  color: #ffffff !important;
+  border: #8ec2f2;
+  font-size: 18.5px;
+}
+
+.bottomText {
+  font-size: 12px;
+  text-align: center;
+  margin: 20% auto 4% auto;
+}
+
+.bottomText a,
+.bottomText a:visited {
+  text-decoration: none;
+  color: #8ec2f2;
+}
+
+#register img {
+  width: auto;
+}
+
+.terms {
+  color: #8ec2f2;
+}
+
+.terms:hover {
+  color: #6cafed;
+}
+
+.terms,
+.terms:visited {
+  text-decoration: none;
+}
+
+.signUpBtn {
+  width: auto;
+}
+
+.PassForgot {
+  margin-bottom: 1rem;
+}
+
+.login-status,
+.register-status,
+.forgotpassword-status,
+.resetpassword-status {
+  color: #e6574b;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}

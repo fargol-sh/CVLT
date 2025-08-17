@@ -1,0 +1,79 @@
+.NavbarHome {
+  font-size: 18px !important;
+  background-image: linear-gradient(
+    to right,
+    #05395b,
+    #064461,
+    #114c62,
+    #235366,
+    #235366,
+    #1b4b62
+  );
+}
+
+.GeneralHome {
+  font-size: 18px !important;
+  background-color: #f9f9f9;
+}
+
+.navbarBrand {
+  font-size: 25px;
+  font-weight: 600;
+  padding-inline-end: 0.75rem; /* replaces pe-3 effect */
+}
+
+.HomeBackgrond {
+  background-color: transparent !important;
+}
+
+.GeneralBackground {
+  background-color: #f9f9f9 !important;
+}
+
+.HomeLinkColor {
+  color: #ffffff !important;
+}
+
+.GeneralLinkColor {
+  color: #2d4059 !important;
+}
+
+.navbarBtn {
+  background-color: #8ec2f2;
+  border-radius: 0.3rem;
+  color: #ffffff !important;
+  border: #8ec2f2;
+  font-weight: 500;
+}
+
+.navbarBtn:hover {
+  background-color: #fff;
+  color: #8ec2f2 !important;
+}
+
+.nav-ul {
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.nav-item {
+  transition: all .2s;
+  padding-inline-end: 1rem; /* new */
+}
+
+.nav-item:hover {
+  transform: scale(1.05);
+}
+
+.language-toggle {
+  border: none;
+  font-weight: 500;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  padding-block: 0.5rem; /* vertical padding */
+  padding-inline: 1rem; /* horizontal padding */
+  transition: all .2s;
+}
+.language-toggle:hover {
+  background-color: #8ec2f2;
+}

@@ -1,0 +1,6 @@
+body {
+  margin: 0;
+  transition: font-family 0.3s ease, direction 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

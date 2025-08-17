@@ -1,0 +1,219 @@
+.tests {
+  background-color: #d5deed;
+  color: #2d4059;
+}
+
+.tests p {
+  font-size: 15px;
+}
+
+.tests img {
+  height: 150px;
+  padding: 8%;
+}
+
+.tests h5 {
+  font-size: 25px;
+}
+
+.customCard {
+  border-radius: 10px;
+}
+
+.cardBtn {
+  background-color: #8ec2f2;
+  color: #ffffff !important;
+  border: #8ec2f2;
+  font-size: 16px;
+}
+
+.cardBtn:hover {
+  font-weight: bolder;
+}
+
+.cardbodycustom {
+  padding-bottom: 0.5rem !important;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.startRecord {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.startRecordingmod {
+  animation: pulse 1.2s infinite;
+  cursor: pointer;
+}
+/* اضافه کردن این استایل‌ها به فایل Test.css */
+
+/* Error notification styles */
+.error-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+  min-width: 300px;
+  background-color: #dc3545;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Vazir', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  animation: slideInRight 0.3s ease-out;
+  direction: rtl;
+  text-align: right;
+}
+
+.error-notification.english {
+  direction: ltr;
+  text-align: left;
+}
+
+.error-notification .close-btn {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.error-notification .close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Success notification */
+.success-notification {
+  background-color: #28a745;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+  min-width: 300px;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Vazir', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  animation: slideInRight 0.3s ease-out;
+  direction: rtl;
+  text-align: right;
+}
+
+.success-notification.english {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Animation for notifications */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* File info display */
+.file-info {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.file-info.rtl {
+  direction: rtl;
+}
+
+.file-info.ltr {
+  direction: ltr;
+}
+
+/* Upload area hover state */
+.upload:hover {
+  border-color: #007bff;
+  transition: border-color 0.3s ease;
+}
+
+/* Disabled state for buttons during loading */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading overlay for upload areas */
+.upload-loading {
+  position: relative;
+}
+
+.upload-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: inherit;
+  z-index: 10;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .error-notification,
+  .success-notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    min-width: auto;
+  }
+}

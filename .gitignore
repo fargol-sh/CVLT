@@ -1,0 +1,54 @@
+# =========================
+# Python / Flask
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ENV/
+myenv/
+
+# Flask instance folders & database files
+instance/
+*.sqlite3
+*.db
+*.log
+# Note: backend/app/app.db is tracked, not ignored
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build / static output folders
+backend/static/dist/
+frontend/build/
+
+# =========================
+# IDEs
+# =========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# =========================
+# Keep .env tracked
+# =========================
