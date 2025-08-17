@@ -137,7 +137,12 @@ def login(data):
             session.modified = True
 
             log_security_event("LOGIN_SUCCESS", "User logged in successfully", client_ip, username, "INFO")
-            return jsonify({"login": "successful", "user_id": user.id}), 200
+            return jsonify({
+                             "login": "successful", 
+                             "user_id": user.id,
+                             "isAdmin": "true" if (hasattr(user, 'role') and user.role == 'admin') or user.username == 'admin' else "false"
+                            }), 200
+
 
         else:
             # Handle failed login attempts
