@@ -150,7 +150,7 @@ def login(data):
                 error_message = record_failed_login(user)
                 log_security_event("LOGIN_FAILED", f"Wrong password (attempt {user.failed_login_attempts})", client_ip, username, "WARNING")
             else:
-                error_message = "Invalid credentials"
+                error_message = "Non-existent username"
                 log_security_event("LOGIN_FAILED", "Non-existent username", client_ip, username, "WARNING")
 
             return jsonify({"login": "failed", "error": error_message}), 401

@@ -3,7 +3,7 @@ import "./Authentication.css";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import PuffLoader from "react-spinners/PuffLoader";
-import { useLanguage } from './LanguageContext';
+import { useLanguage } from "./LanguageContext";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,24 +11,33 @@ export default function Login() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loginStatus, setLoginStatus] = useState("");
+  const [rawLoginStatus, setRawLoginStatus] = useState(""); // store untranslated error
   const [isLoading, setIsLoading] = useState(false);
 
   const { language } = useLanguage();
 
   const translateError = (errorMessage) => {
+    if (!errorMessage) return "";
     if (language === "fa") {
-      if (errorMessage.includes("Invalid credentials")) {
+      if ( errorMessage.includes("This username does not exist") ||
+        errorMessage.includes("Password is wrong")) {
         const attempts = errorMessage.match(/(\d+) attempts remaining/);
-        return attempts ? `اطلاعات وارد شده اشتباه است. ${attempts[1]} تلاش باقی مانده.` : "اطلاعات وارد شده اشتباه است.";
+        return attempts
+          ? `رمز عبور نادرست است. ${attempts[1]} تلاش باقی مانده.`
+          : "نام کاربری وجود ندارد.";
       }
-      if (errorMessage.includes("Account locked")) {
+      if (errorMessage.includes("locked")) {
         const minutes = errorMessage.match(/(\d+) minutes/);
-        return minutes ? `حساب شما به دلیل تلاش‌های زیاد قفل شد. ${minutes[1]} دقیقه دیگر تلاش کنید.` : "حساب شما موقتاً قفل شده است.";
+        return minutes
+          ? `حساب شما به دلیل تلاش‌های زیاد قفل شد. ${minutes[1]} دقیقه دیگر تلاش کنید.`
+          : "حساب شما موقتاً قفل شده است.";
       }
-      if (errorMessage.includes("Too many login attempts")) return "تلاش‌های زیادی انجام داده‌اید. لطفاً بعداً تلاش کنید.";
-      if (errorMessage.includes("Username and password required")) return "نام کاربری و رمز عبور الزامی است.";
-      if (errorMessage.includes("Invalid input length")) return "طول ورودی نامعتبر است.";
+      if (errorMessage.includes("Too many login attempts. Please try again later"))
+        return "تلاش‌های زیادی انجام داده‌اید. لطفاً بعداً تلاش کنید.";
+      if (errorMessage.includes("Username and password are required"))
+        return "نام کاربری و رمز عبور الزامی است.";
+      if (errorMessage.includes("Invalid input length"))
+        return "طول ورودی نامعتبر است.";
       return errorMessage;
     }
     return errorMessage;
@@ -40,59 +49,55 @@ export default function Login() {
 
     try {
       const response = await fetch("/api/auth/login", {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ username, password }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
 
       if (response.status === 200) {
         if (data.login === "failed") {
-          const errorMessage = data.error || (language === "en" ? "Login failed" : "ورود ناموفق");
-          setLoginStatus(translateError(errorMessage));
+          const errorMessage = data.error || "Login failed";
+          setRawLoginStatus(errorMessage);
         } else if (data.login === "successful") {
-          // Update context for logged in user and admin status
           setLogged(true);
-          
-          // Check if backend sent isAdmin (optional: fallback to /check-admin)
           if (typeof data.isAdmin !== "undefined") {
             setIsAdmin(data.isAdmin === "true");
           } else {
-            // Fetch admin status separately
-            const adminResp = await fetch('/api/auth/check-admin');
+            const adminResp = await fetch("/api/auth/check-admin");
             if (adminResp.ok) {
               const adminData = await adminResp.json();
               setIsAdmin(adminData.isAdmin === "true");
             }
           }
 
-          navigate('/profile', true);
+          navigate("/profile", true);
           setUsername("");
           setPassword("");
-          setLoginStatus("");
+          setRawLoginStatus("");
         }
       } else if (response.status === 401) {
-        const errorMessage = data.error || (language === "en" ? "Invalid credentials" : "اطلاعات نامعتبر");
-        setLoginStatus(translateError(errorMessage));
+        const errorMessage = data.error === "Non-existent username" ? "This username does not exist." : `Password is wrong! (${data.error})`;
+        setRawLoginStatus(errorMessage);
+        console.log(errorMessage);
       } else if (response.status === 429) {
-        const errorMessage = data.error || (language === "en" ? "Too many attempts. Please try again later." : "تلاش‌های زیاد. لطفاً بعداً تلاش کنید.");
-        setLoginStatus(translateError(errorMessage));
+        const errorMessage = data.error;
+        setRawLoginStatus(errorMessage);
       } else if (response.status === 423) {
-        const errorMessage = data.error || (language === "en" ? "Account temporarily locked" : "حساب موقتاً قفل شده");
-        setLoginStatus(translateError(errorMessage));
+        const errorMessage = `Your account is temporarily locked. Try again ${data.error} later.`;
+        setRawLoginStatus(errorMessage);
       } else {
         const errorMessage = data.error || `${response.statusText}!`;
-        setLoginStatus(translateError(errorMessage));
+        setRawLoginStatus(errorMessage);
       }
-
     } catch (error) {
       console.log(error);
-      setLoginStatus(language === "en" ? "Network error. Please try again." : "خطای شبکه. لطفاً دوباره تلاش کنید.");
+      setRawLoginStatus("Network error. Please try again.");
     }
 
     setIsLoading(false);
-  }
+  };
 
   return (
     <div className="authentication">
@@ -100,7 +105,9 @@ export default function Login() {
         <div className="row">
           <div className="col-5 half">
             <p className="half_title">
-              {language === "en" ? "Continue with your personalized health journey today" : "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات رو ادامه بده."}
+              {language === "en"
+                ? "Continue with your personalized health journey today"
+                : "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات رو ادامه بده."}
             </p>
           </div>
           <div className="col-7">
@@ -120,7 +127,10 @@ export default function Login() {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="exampleInputPassword1" className="form-label">
+                <label
+                  htmlFor="exampleInputPassword1"
+                  className="form-label"
+                >
                   {language === "en" ? "Password" : "رمز عبور"}
                 </label>
                 <input
@@ -132,20 +142,51 @@ export default function Login() {
                   required
                 />
               </div>
-              <div id="PasswordHelp" className="form-text" style={{ textAlign: language === "en" ? "right" : "left" }}>
-                <Link to="/forgotpassword">{language === "en" ? "Forgot Password?" : "پسورد خود را فراموش کرده اید؟"}</Link>
+              <div
+                id="PasswordHelp"
+                className="form-text"
+                style={{
+                  textAlign: language === "en" ? "right" : "left",
+                }}
+              >
+                <Link to="/forgotpassword">
+                  {language === "en"
+                    ? "Forgot Password?"
+                    : "پسورد خود را فراموش کرده اید؟"}
+                </Link>
               </div>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isLoading}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                {isLoading ? <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }}/> : language === "en" ? "Login →" : "ورود ←"}
+                {isLoading ? (
+                  <PuffLoader
+                    size={25}
+                    color="#fff"
+                    cssOverride={{ marginBottom: "0px" }}
+                  />
+                ) : language === "en" ? (
+                  "Login →"
+                ) : (
+                  "ورود ←"
+                )}
               </button>
-              <p className="login-status">{loginStatus}</p>
+              <p className="login-status">
+                {translateError(rawLoginStatus)}
+              </p>
               <div className="bottomText form-text">
-                {language === "en" ? "Don't have an account?" : "حساب کاربری ندارید؟"}<Link to="/register">{language === "en" ? " Sign up" : " ثبت نام"}</Link>
+                {language === "en"
+                  ? "Don't have an account?"
+                  : "حساب کاربری ندارید؟"}
+                <Link to="/register">
+                  {language === "en" ? " Sign up" : " ثبت نام"}
+                </Link>
               </div>
             </form>
           </div>
