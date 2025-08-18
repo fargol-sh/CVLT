@@ -331,6 +331,7 @@ export default function Register() {
     setStatusType("");
 
     // Client-side validation
+    
     if (!validateForm()) {
       return;
     }

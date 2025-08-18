@@ -18,11 +18,26 @@ export default function Forgotpassword() {
   
   const { language } = useLanguage();
   
+  // Email validation function
+  const isValidEmail = (email) => {
+    const pattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return pattern.test(email);
+  };
+
   const onsubmit = async (event) => {
     event.preventDefault();
 
+    if (!isValidEmail(email)) {
+      setEmailStatus(
+        language === "en"
+          ? "Please enter a valid email address!"
+          : "لطفاً یک آدرس ایمیل معتبر وارد کنید!"
+      );
+      return;
+    }
 
     setIsLoading(true);
+    
     // Send User Inputs
     try {
       const response = await fetch("/api/auth/reset-password", {
