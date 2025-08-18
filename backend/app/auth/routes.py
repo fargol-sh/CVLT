@@ -453,7 +453,7 @@ def get_current_user():
 # ----------------------
 # Session cleanup on app startup
 # ----------------------
-@bp.before_app_first_request
+@bp.before_app_request  # changed, "before_app_first_request" is removed in flask 2.3 
 def cleanup_sessions():
     """Clean up any stale sessions on app startup"""
     try:
