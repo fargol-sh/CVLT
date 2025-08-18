@@ -2,7 +2,7 @@ import { Fragment, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from './LanguageContext';
 
-function AuthAlert({ alertText, buttonText, isVisible, onClose }) {
+function AuthAlert({ title, alertText, buttonText, isVisible, onClose }) {
   const { language } = useLanguage();
   
   useEffect(() => {
@@ -48,7 +48,7 @@ function AuthAlert({ alertText, buttonText, isVisible, onClose }) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLongTitle">
-                {language === "en" ? "Reset Password" : "بازنشانی رمز عبور" }
+                {title}
               </h5>
               <button
                 type="button"
