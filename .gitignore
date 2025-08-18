@@ -20,7 +20,6 @@ build/
 # Flask instance folders & database files
 instance/
 *.sqlite3
-*.db
 *.log
 # Note: backend/app/app.db is tracked, not ignored
 
