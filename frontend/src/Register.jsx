@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import "./Authentication.css";
 import { useNavigate, Link } from "react-router-dom";
 import PuffLoader from "react-spinners/PuffLoader";
@@ -240,7 +240,7 @@ export default function Register() {
       allErrors.push(
         language === "en" 
           ? "Username must be at least 3 characters" 
-          : "نام کاربری باید حداقل ۳ کاراکتر باشد"
+          : "نام کاربری باید حداقل ۳ کاراکتر باشد."
       );
     }
     
@@ -248,7 +248,7 @@ export default function Register() {
       allErrors.push(
         language === "en" 
           ? "Username must be less than 50 characters" 
-          : "نام کاربری باید کمتر از ۵۰ کاراکتر باشد"
+          : "نام کاربری باید کمتر از ۵۰ کاراکتر باشد."
       );
     }
 
@@ -258,7 +258,7 @@ export default function Register() {
       allErrors.push(
         language === "en" 
           ? "Please enter a valid email address" 
-          : "لطفاً یک آدرس ایمیل معتبر وارد کنید"
+          : "لطفاً یک آدرس ایمیل معتبر وارد کنید."
       );
     }
 
@@ -268,7 +268,7 @@ export default function Register() {
       allErrors.push(
         language === "en" 
           ? "Age must be between 13 and 120" 
-          : "سن باید بین ۱۳ تا ۱۲۰ سال باشد"
+          : "سن باید بین ۱۳ تا ۱۲۰ سال باشد."
       );
     }
 
@@ -277,7 +277,7 @@ export default function Register() {
       allErrors.push(
         language === "en" 
           ? "Please select a gender" 
-          : "لطفاً جنسیت خود را انتخاب کنید"
+          : "لطفاً جنسیت خود را انتخاب کنید."
       );
     }
 
@@ -299,7 +299,7 @@ export default function Register() {
       allErrors.push(
         language === "en" 
           ? "You must agree to the terms and conditions" 
-          : "باید شرایط و قوانین را قبول کنید"
+          : "باید شرایط و قوانین را قبول کنید."
       );
     }
 
@@ -434,67 +434,7 @@ export default function Register() {
   };
   
   return (
-    <>
-      {/* CSS Styles */}
-      <style jsx>{`
-        .register-status {
-          padding: 10px 15px;
-          border-radius: 4px;
-          margin-bottom: 15px;
-          white-space: pre-line;
-          font-size: 14px;
-          line-height: 1.4;
-        }
-
-        .register-status.error {
-          background-color: #f8d7da;
-          color: #721c24;
-          border: 1px solid #f5c6cb;
-        }
-
-        .register-status.success {
-          background-color: #d4edda;
-          color: #155724;
-          border: 1px solid #c3e6cb;
-        }
-
-        .register-status.info {
-          background-color: #d1ecf1;
-          color: #0c5460;
-          border: 1px solid #bee5eb;
-        }
-
-        .password-requirements {
-          margin-top: 8px;
-          padding: 10px;
-          background-color: #f8f9fa;
-          border-radius: 4px;
-          border: 1px solid #dee2e6;
-          font-size: 12px;
-        }
-
-        .requirement {
-          margin: 3px 0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .requirement.valid {
-          color: #28a745;
-        }
-
-        .requirement.invalid {
-          color: #dc3545;
-        }
-
-        .requirement .icon {
-          font-weight: bold;
-          width: 15px;
-          text-align: center;
-        }
-      `}</style>
-
+    <Fragment>
       <div className="authentication">
         <div className="container-fluid">
           <div className="row">
@@ -506,7 +446,7 @@ export default function Register() {
               </p>
             </div>
             <div className="col-6">
-              <form id="register" className="row" onSubmit={onsubmit}>
+              <form id="register" className="row" onSubmit={onsubmit} noValidate>
                 <div className="col-md-12 pt-5">
                   <img src={"./images/Logo.png"} alt="logo" />
                 </div>
@@ -647,7 +587,7 @@ export default function Register() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="form-control"
+                    className="form-control confirm-password"
                     id="inputPassword3"
                     required
                     disabled={isLoading}
@@ -655,7 +595,7 @@ export default function Register() {
                   {/* Show password match status */}
                   {confirmPassword && password && (
                     <small 
-                      className={`form-text ${
+                      className={`${
                         password === confirmPassword ? 'text-success' : 'text-danger'
                       }`}
                     >
@@ -723,6 +663,6 @@ export default function Register() {
           </div>
         </div>
       </div>
-    </>
+    </Fragment>
   );
 }
