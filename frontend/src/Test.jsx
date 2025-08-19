@@ -294,8 +294,7 @@ export default function Test() {
         <div className="col-md-3">
           <audio controls key={`${currentTest}-${currentRound}`}>
             <source
-              src={`http://127.0.0.1:5000/static/audio/test${currentTest}.m4a`}
-              type="audio/x-m4a"
+            src={`/static/audio/test${currentTest}.m4a`}  type="audio/x-m4a"
               preload="auto"
             />
           </audio>
