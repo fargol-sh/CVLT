@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { FaCamera, FaLeaf } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa";
 
 const ProfileImageUpload = ({ onChange, source }) => {
   const inputRef = useRef();

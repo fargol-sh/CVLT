@@ -19,6 +19,9 @@ export default function Register() {
   const [statusType, setStatusType] = useState(""); // "error", "success", "info"
   const [isLoading, setIsLoading] = useState(false);
 
+  // Keep a bilingual payload so status can react to language changes
+  const [registerStatusPayload, setRegisterStatusPayload] = useState(null); // { en: string|string[], fa: string|string[] }
+
   // Real-time validation state
   const [passwordValidation, setPasswordValidation] = useState({
     minLength: false,
@@ -31,6 +34,29 @@ export default function Register() {
 
   const { language } = useLanguage();
   const navigate = useNavigate();
+
+  // Helper: bilingual wrapper
+  const L = (en, fa) => ({ en, fa });
+
+  // Helper: format messages (string or array) into bullet list string
+  const formatForDisplay = (messages) => {
+    if (Array.isArray(messages)) {
+      return messages.map((msg) => `• ${msg}`).join('\n');
+    }
+    if (typeof messages === 'string' && messages.includes('\n')) {
+      return messages.split('\n').map((m) => `• ${m}`).join('\n');
+    }
+    return messages;
+  };
+
+  // When language changes, update the visible status text from the bilingual payload
+  useEffect(() => {
+    if (registerStatusPayload) {
+      const next = formatForDisplay(registerStatusPayload[language] || "");
+      setRegisterStatus(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, registerStatusPayload]);
 
   // Real-time password validation
   const checkPasswordRealtime = (password) => {
@@ -150,83 +176,89 @@ export default function Register() {
     return backendError;
   };
 
-  // Complete password validation function
-  const validatePassword = (password, language) => {
+  // New: bilingual backend error message helper (kept original getErrorMessage; this adds i18n payload)
+  const getErrorMessageIntl = (backendError) => {
+    const fa = getErrorMessage(backendError, "fa");
+    return L(backendError, fa);
+  };
+
+  // New: bilingual password validation (kept original function above; this returns EN/FA pairs)
+  const validatePasswordIntl = (password) => {
     const errors = [];
-    
     if (password.length < 8) {
-      errors.push(
-        language === "en" 
-          ? "Password must be at least 8 characters long" 
-          : "رمز عبور باید حداقل ۸ کاراکتر باشد"
-      );
+      errors.push(L(
+        "Password must be at least 8 characters long",
+        "رمز عبور باید حداقل ۸ کاراکتر باشد"
+      ));
     }
-    
     if (!/[a-z]/.test(password)) {
-      errors.push(
-        language === "en" 
-          ? "Password must contain at least one lowercase letter" 
-          : "رمز عبور باید حداقل یک حرف کوچک داشته باشد"
-      );
+      errors.push(L(
+        "Password must contain at least one lowercase letter",
+        "رمز عبور باید حداقل یک حرف کوچک داشته باشد"
+      ));
     }
-    
     if (!/[A-Z]/.test(password)) {
-      errors.push(
-        language === "en" 
-          ? "Password must contain at least one uppercase letter" 
-          : "رمز عبور باید حداقل یک حرف بزرگ داشته باشد"
-      );
+      errors.push(L(
+        "Password must contain at least one uppercase letter",
+        "رمز عبور باید حداقل یک حرف بزرگ داشته باشد"
+      ));
     }
-    
     if (!/\d/.test(password)) {
-      errors.push(
-        language === "en" 
-          ? "Password must contain at least one digit" 
-          : "رمز عبور باید حداقل یک عدد داشته باشد"
-      );
+      errors.push(L(
+        "Password must contain at least one digit",
+        "رمز عبور باید حداقل یک عدد داشته باشد"
+      ));
     }
-    
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      errors.push(
-        language === "en" 
-          ? "Password must contain at least one special character" 
-          : "رمز عبور باید حداقل یک کاراکتر ویژه داشته باشد"
-      );
+      errors.push(L(
+        "Password must contain at least one special character",
+        "رمز عبور باید حداقل یک کاراکتر ویژه داشته باشد"
+      ));
     }
-    
     if (/\s/.test(password)) {
-      errors.push(
-        language === "en" 
-          ? "Password cannot contain spaces" 
-          : "رمز عبور نمی‌تواند فاصله داشته باشد"
-      );
+      errors.push(L(
+        "Password cannot contain spaces",
+        "رمز عبور نمی‌تواند فاصله داشته باشد"
+      ));
     }
-    
     return errors;
   };
 
-  // Status message display with proper styling
-  const displayStatus = (messages, type = "error") => {
-    let displayMessage;
-    
-    if (Array.isArray(messages)) {
-      // اگر آرایه از خطاها باشه
-      displayMessage = messages.map((msg, index) => `• ${msg}`).join('\n');
-    } else if (typeof messages === 'string' && messages.includes('\n')) {
-      // اگه رشته با \n باشه، تبدیل به لیست
-      displayMessage = messages.split('\n').map(msg => `• ${msg}`).join('\n');
-    } else {
-      displayMessage = messages;
+  // New: bilingual status setter that also enables live language switching
+  const displayStatusIntl = (messagesIntl, type = "error") => {
+    // Normalize to { en: string[]|string, fa: string[]|string }
+    let payload = { en: "", fa: "" };
+
+    // Array of bilingual entries
+    if (Array.isArray(messagesIntl) && messagesIntl.every(m => typeof m === 'object' && m.en && m.fa)) {
+      payload = {
+        en: messagesIntl.map(m => m.en),
+        fa: messagesIntl.map(m => m.fa)
+      };
     }
-    
-    setRegisterStatus(displayMessage);
+    // Single bilingual entry
+    else if (messagesIntl && typeof messagesIntl === 'object' && messagesIntl.en && messagesIntl.fa) {
+      payload = {
+        en: messagesIntl.en,
+        fa: messagesIntl.fa
+      };
+    }
+    // Fallback: single string used for both languages
+    else {
+      payload = { en: messagesIntl, fa: messagesIntl };
+    }
+
+    setRegisterStatusPayload(payload);
     setStatusType(type);
-    
-    // Auto-clear success messages after 3 seconds
+
+    // Also set immediate visible status for current language
+    setRegisterStatus(formatForDisplay(payload[language]));
+
     if (type === "success") {
       setTimeout(() => {
         setRegisterStatus("");
         setStatusType("");
+        setRegisterStatusPayload(null);
       }, 3000);
     }
   };
@@ -234,78 +266,64 @@ export default function Register() {
   // Complete client-side validation
   const validateForm = () => {
     const allErrors = [];
-    
-    // بررسی نام کاربری
+
+    // validate username
     if (username.trim().length < 3) {
       allErrors.push(
-        language === "en" 
-          ? "Username must be at least 3 characters" 
-          : "نام کاربری باید حداقل ۳ کاراکتر باشد."
+        L("Username must be at least 3 characters", "نام کاربری باید حداقل ۳ کاراکتر باشد.")
       );
     }
     
     if (username.trim().length > 50) {
       allErrors.push(
-        language === "en" 
-          ? "Username must be less than 50 characters" 
-          : "نام کاربری باید کمتر از ۵۰ کاراکتر باشد."
+        L("Username must be less than 50 characters", "نام کاربری باید کمتر از ۵۰ کاراکتر باشد.")
       );
     }
 
-    // بررسی ایمیل
+    // validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       allErrors.push(
-        language === "en" 
-          ? "Please enter a valid email address" 
-          : "لطفاً یک آدرس ایمیل معتبر وارد کنید."
+        L("Please enter a valid email address", "لطفاً یک آدرس ایمیل معتبر وارد کنید.")
       );
     }
 
-    // بررسی سن
+    // validate age
     const ageNum = parseInt(age);
     if (isNaN(ageNum) || ageNum < 13 || ageNum > 120) {
       allErrors.push(
-        language === "en" 
-          ? "Age must be between 13 and 120" 
-          : "سن باید بین ۱۳ تا ۱۲۰ سال باشد."
+        L("Age must be between 13 and 120", "سن باید بین ۱۳ تا ۱۲۰ سال باشد.")
       );
     }
 
-    // بررسی انتخاب جنسیت
+    // validate gender choice
     if (!gender) {
       allErrors.push(
-        language === "en" 
-          ? "Please select a gender" 
-          : "لطفاً جنسیت خود را انتخاب کنید."
+        L("Please select a gender", "لطفاً جنسیت خود را انتخاب کنید.")
       );
     }
 
-    // بررسی کامل رمز عبور
-    const passwordErrors = validatePassword(password, language);
-    allErrors.push(...passwordErrors);
+    // validate password (bilingual)
+    const passwordErrorsIntl = validatePasswordIntl(password);
+    allErrors.push(...passwordErrorsIntl);
 
-    // بررسی تطبیق رمزهای عبور
+    // validate password matching
     if (password !== confirmPassword) {
       allErrors.push(
-        language === "en" 
-          ? "Passwords do not match!" 
-          : "رمزهای عبور با هم مطابقت ندارند!"
+        L("Passwords do not match!", "رمزهای عبور با هم مطابقت ندارند!")
       );
     }
 
-    // بررسی تیک شرایط و قوانین
+    // validate terms and conditions
     if (!checked) {
       allErrors.push(
-        language === "en" 
-          ? "You must agree to the terms and conditions" 
-          : "باید شرایط و قوانین را قبول کنید."
+        L("You must agree to the terms and conditions", "باید شرایط و قوانین را قبول کنید.")
       );
     }
 
-    // نمایش همه خطاها
+    // display all errors
     if (allErrors.length > 0) {
-      displayStatus(allErrors, "error");
+      displayStatusIntl(allErrors, "error");
       return false;
     }
 
@@ -329,9 +347,9 @@ export default function Register() {
     // Clear previous status
     setRegisterStatus("");
     setStatusType("");
+    setRegisterStatusPayload(null);
 
     // Client-side validation
-    
     if (!validateForm()) {
       return;
     }
@@ -358,10 +376,11 @@ export default function Register() {
       // Handle different response scenarios
       if (response.status === 201 && data.register === "successful") {
         // Registration successful
-        displayStatus(
-          language === "en" 
-            ? "Registration successful! Redirecting to login..." 
-            : "ثبت‌نام موفقیت‌آمیز بود! در حال انتقال به صفحه ورود...",
+        displayStatusIntl(
+          L(
+            "Registration successful! Redirecting to login...",
+            "ثبت‌نام موفقیت‌آمیز بود! در حال انتقال به صفحه ورود..."
+          ),
           "success"
         );
         
@@ -379,44 +398,45 @@ export default function Register() {
         }, 1500);
         
       } else if (response.status === 400 && data.register === "failed") {
-        // Use backend error message directly
+        // Use backend error message directly (bilingual)
         const backendError = data.error || "Registration failed";
-        const errorMessage = getErrorMessage(backendError, language);
-        displayStatus(errorMessage, "error");
+        displayStatusIntl(getErrorMessageIntl(backendError), "error");
         
       } else if (response.status === 429) {
         // Rate limiting
-        displayStatus(
-          language === "en" 
-            ? "Too many registration attempts. Please try again later." 
-            : "تلاش‌های زیادی برای ثبت‌نام. لطفاً بعداً تلاش کنید.",
+        displayStatusIntl(
+          L(
+            "Too many registration attempts. Please try again later.",
+            "تلاش‌های زیادی برای ثبت‌نام. لطفاً بعداً تلاش کنید."
+          ),
           "error"
         );
         
       } else if (response.status >= 500) {
         // Server errors
-        displayStatus(
-          language === "en" 
-            ? "Server error. Please try again later." 
-            : "خطای سرور. لطفاً بعداً تلاش کنید.",
+        displayStatusIntl(
+          L(
+            "Server error. Please try again later.",
+            "خطای سرور. لطفاً بعداً تلاش کنید."
+          ),
           "error"
         );
         
       } else {
         // For any other error, use backend message directly
         const backendError = data.error || "Registration failed. Please try again.";
-        const errorMessage = getErrorMessage(backendError, language);
-        displayStatus(errorMessage, "error");
+        displayStatusIntl(getErrorMessageIntl(backendError), "error");
       }
       
     } catch (error) {
       console.error('Registration error:', error);
       
       // Network or other errors
-      displayStatus(
-        language === "en" 
-          ? "Network error. Please check your connection and try again." 
-          : "خطای شبکه. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+      displayStatusIntl(
+        L(
+          "Network error. Please check your connection and try again.",
+          "خطای شبکه. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید."
+        ),
         "error"
       );
     } finally {
