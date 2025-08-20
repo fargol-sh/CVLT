@@ -232,11 +232,11 @@ def reset_password(data):
         client_ip = request.remote_addr
 
         if not email:
-            return jsonify({"reset": "failed", "error": "Email is required"}), 400
+            return jsonify({"reset": "failed", "error": "Email is required."}), 400
 
         # Validate email format
         if not is_valid_email(email):
-            return jsonify({"reset": "failed", "error": "Invalid email format"}), 400
+            return jsonify({"reset": "failed", "error": "Invalid email format."}), 400
 
         # Rate limiting for reset requests using config values
         max_reset_attempts = int(current_app.config.get('MAX_RESET_ATTEMPTS', 5))
@@ -257,20 +257,22 @@ def reset_password(data):
             # Check if there's already an active reset token (not expired)
             if (user.reset_token and user.reset_token_expiry and 
                 user.reset_token_expiry > datetime.utcnow()):
-                return jsonify({"reset": "failed", "error": "Reset email already sent recently"}), 429
+                return jsonify({"reset": "failed", "error": "Reset email already sent recently."}), 429
             
             record_reset_attempt(user)
             send_password_reset_email(user)
             logger.info(f"Password reset requested for email: {email}")
+            
+            # Only successful if user exists and email is sent
+            return jsonify({"reset": "successful"}), 200
+
         else:
             logger.warning(f"Password reset requested for non-existent email: {email}")
-        
-        # Always return success to prevent email enumeration
-        return jsonify({"reset": "successful"}), 200
+            return jsonify({"reset": "failed", "error": "Email does not exist!"}), 404
 
     except Exception as e:
         logger.error(f"Password reset error: {str(e)}")
-        return jsonify({"reset": "failed", "error": "Internal server error"}), 500
+        return jsonify({"reset": "failed", "error": "Internal server error."}), 500
 
 # ----------------------
 # CONFIRM PASSWORD RESET
