@@ -123,6 +123,7 @@ export default function Forgotpassword() {
     <main>
       {/* Success Alert */}
       <AuthAlert
+        title={language === "en" ? "Reset Password" : "بازنشانی رمز عبور"}
         alertText={language === "en" 
           ? "An email has been sent to you with instructions on how to reset your password." 
           : "یک ایمیل با دستورالعمل‌های بازنشانی رمز عبور برای شما ارسال شده است."}

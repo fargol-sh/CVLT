@@ -105,7 +105,7 @@ export default function Register() {
     );
   };
 
-  // Complete Persian translation for all backend error messages
+  // Complete Persian translation for all error messages
   const getErrorMessage = (backendError, language) => {
     if (language === "fa") {
       const persianTranslations = {
