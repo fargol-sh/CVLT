@@ -167,6 +167,7 @@ export default function Test() {
       const response = await fetch("/api/tests/submit-audio", {
         method: "POST",
         body: formData,
+        credentials: "include" 
       });
 
       if (response.ok) {

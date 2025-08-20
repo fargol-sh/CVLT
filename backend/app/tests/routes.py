@@ -1,71 +1,69 @@
-from flask import request, jsonify, session
-from flask_login import current_user
+import os
+from flask import request, jsonify
+from flask_login import current_user, login_required
 from datetime import datetime
 from app.models.score import Score
 from app.tests.utils import save_and_keep_original, recognize_audio, calculate_score, allowed_upload
 from app.tests import bp
 from app import db
+import logging
+import traceback
 
 MAX_FILE_SIZE_MB = 5
+BASE_VOICES_DIR = os.path.join(os.getcwd(), 'voices')  # مسیر مطلق برای ذخیره فایل‌ها
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 @bp.route('/submit-audio', methods=['POST'])
+@login_required
 def submit_audio():
-    """
-    آپلود و پردازش صدا (wav, mp3, m4a, ogg, webm و blob بدون نام فایل).
-    حداکثر حجم: 5MB
-    """
-    if 'user_id' not in session:
-        return jsonify({"error": "کاربر وارد سیستم نشده است"}), 401
-
     try:
-        test_number = int(request.form.get('test_number'))
-        round_number = int(request.form.get('round_number'))
-    except (TypeError, ValueError):
-        return jsonify({"error": "شماره تست یا دور نامعتبر است"}), 400
+        # بررسی فرم
+        try:
+            test_number = int(request.form.get('test_number'))
+            round_number = int(request.form.get('round_number'))
+        except (TypeError, ValueError):
+            return jsonify({"error": "شماره تست یا دور نامعتبر است"}), 400
 
-    if test_number not in [1, 2, 3, 4]:
-        return jsonify({"error": "شماره تست باید بین 1 تا 4 باشد"}), 400
-    if round_number not in [1, 2, 3, 4, 5]:
-        return jsonify({"error": "شماره دور باید بین 1 تا 5 باشد"}), 400
+        if test_number not in [1, 2, 3, 4]:
+            return jsonify({"error": "شماره تست باید بین 1 تا 4 باشد"}), 400
+        if round_number not in [1, 2, 3, 4, 5]:
+            return jsonify({"error": "شماره دور باید بین 1 تا 5 باشد"}), 400
 
-    if 'audio' not in request.files:
-        return jsonify({"error": "هیچ فایل صوتی ارسال نشده است"}), 400
+        if 'audio' not in request.files:
+            return jsonify({"error": "هیچ فایل صوتی ارسال نشده است"}), 400
 
-    audio_file = request.files['audio']
+        audio_file = request.files['audio']
 
-    # اگر filename خالی است ولی mimetype مجاز است، اجازه بده
-    if (not getattr(audio_file, 'filename', '')) and not allowed_upload('', getattr(audio_file, 'mimetype', None)):
-        return jsonify({"error": "هیچ فایلی انتخاب نشده است"}), 400
+        # چک فرمت
+        if not allowed_upload(getattr(audio_file, 'filename', ''), getattr(audio_file, 'mimetype', None)):
+            return jsonify({"error": "فرمت فایل پشتیبانی نمی‌شود. فرمت‌های مجاز: MP3, M4A, WAV, OGG, WebM"}), 400
 
-    # چک حجم
-    max_bytes = MAX_FILE_SIZE_MB * 1024 * 1024
-    audio_file.seek(0, 2)
-    file_size = audio_file.tell()
-    audio_file.seek(0)
-    if file_size > max_bytes:
-        return jsonify({"error": f"حجم فایل از {MAX_FILE_SIZE_MB} مگابایت بیشتر است"}), 400
-    if file_size == 0:
-        return jsonify({"error": "فایل خالی است"}), 400
+        # چک حجم
+        audio_file.seek(0, os.SEEK_END)
+        file_size_mb = audio_file.tell() / (1024 * 1024)
+        audio_file.seek(0)
+        if file_size_mb > MAX_FILE_SIZE_MB:
+            return jsonify({"error": f"حجم فایل از {MAX_FILE_SIZE_MB} مگابایت بیشتر است"}), 400
+        if file_size_mb == 0:
+            return jsonify({"error": "فایل خالی است"}), 400
 
-    # چک فرمت (بر اساس filename یا mimetype برای blob)
-    if not allowed_upload(getattr(audio_file, 'filename', ''), getattr(audio_file, 'mimetype', None)):
-        return jsonify({"error": "فرمت فایل پشتیبانی نمی‌شود. فرمت‌های مجاز: MP3, M4A, WAV, OGG, WebM"}), 400
-
-    username = current_user.username
-
-    try:
+        username = current_user.username
         save_path, error = save_and_keep_original(audio_file, username, test_number, round_number)
         if error:
             return jsonify({"error": error}), 400
 
+        # تبدیل و تشخیص صدا
         text = recognize_audio(save_path)
         if not text or not text.strip():
             return jsonify({"error": "متن قابل تشخیصی در فایل صوتی یافت نشد. لطفاً مجدداً تلاش کنید."}), 400
 
         score, correct_words, incorrect_words = calculate_score(text, test_number)
 
-        user_id = session['user_id']
+        # ذخیره نمره
+        user_id = current_user.id
         score_entry = Score.query.filter_by(
             user_id=user_id, test_number=test_number, round_number=round_number
         ).first()
@@ -100,6 +98,7 @@ def submit_audio():
         })
 
     except Exception as e:
-        print(f"Error processing audio for user {username}: {str(e)}")
         db.session.rollback()
+        logger.error(f"Error processing audio for user {current_user.username}: {str(e)}")
+        logger.error(traceback.format_exc())
         return jsonify({"error": "خطا در پردازش فایل صوتی. لطفاً مجدداً تلاش کنید."}), 500

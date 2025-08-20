@@ -2,7 +2,7 @@
   "name": "cvlt_front_end",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/",
+  "homepage": "/app",
   "proxy": "http://127.0.0.1:5000/",
   "secure": false,
   "dependencies": {
