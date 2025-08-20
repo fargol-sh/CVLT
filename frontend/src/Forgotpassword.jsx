@@ -8,13 +8,13 @@ import { Link } from "react-router-dom";
 export default function Forgotpassword() {
   // Email State
   const [email, setEmail] = useState("");
-  // Email Status (store only the error key from backend, not the final translated string)
+  // Store backend error key (raw message)
   const [emailStatusKey, setEmailStatusKey] = useState("");
   // Modal Visibility State
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  // Loading state
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { language } = useLanguage();
   
   // Email validation function
@@ -55,16 +55,31 @@ export default function Forgotpassword() {
     }
   };
 
-  // Function to get translated message based on key + language
+  // Translate backend error to selected language
   const translateError = (key) => {
     if (!key) return "";
-    if (errorMessages[key]) {
-      return language === "en" ? errorMessages[key].en : errorMessages[key].fa;
+
+    // Handle dynamic case: "Reset email already sent. Try again in X minutes."
+    if (key.startsWith("Reset email already sent.")) {
+      const match = key.match(/(\d+)\s+minutes?/);
+      const minutes = match ? match[1] : "";
+      if (language === "en") {
+        return `Reset email already sent. Try again in ${minutes} minutes.`;
+      } else {
+        return `ایمیل بازنشانی قبلاً ارسال شده است. لطفاً ${minutes} دقیقه دیگر دوباره تلاش کنید.`;
+      }
     }
-    // fallback if backend sends unexpected error
+
+    // Static mapped errors
+    if (errorMessages[key]) {
+      return language === "en" ? errorMessages[key].en : (errorMessages[key].fa || errorMessages[key].en);
+    }
+
+    // Fallback → show raw backend message
     return key;
   };
 
+  // Handle form submission
   const onsubmit = async (event) => {
     event.preventDefault();
 
@@ -74,78 +89,78 @@ export default function Forgotpassword() {
     }
 
     setIsLoading(true);
-    
-    // Send User Inputs
+
     try {
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
-        body: JSON.stringify({
-          email: email,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
       });
+
       const data = await response.json();
+
       if (response.status === 200) {
-        if (data.reset === "failed") {
-          setEmailStatusKey(data.error || "Email does not exist!");
-        } else if (data.reset === "successful") {
+        if (data.reset === "successful") {
           localStorage.setItem("resetPasswordToken", data.token);
-          // Reset Input
           setEmail("");
-          // Clear status
           setEmailStatusKey("");
-          // Show Modal
           setIsModalVisible(true);
+        } else {
+          setEmailStatusKey(data.error || "Internal server error.");
         }
       } else {
         setEmailStatusKey(data.error || response.statusText);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setEmailStatusKey("Internal server error.");
     }
-    
+
     setIsLoading(false);
   };
 
   return (
     <main>
+      {/* Success Alert */}
       <AuthAlert
-        alertText={language === "en" ? 
-          "An email has been sent to you with instructions on how to reset your password." 
-          : "یک ایمیل با دستورالعمل‌های بازنشانی رمز عبور برای شما ارسال شده است." }
-        buttonText={language === "en" ? "Log In" : "ورود" }
+        alertText={language === "en" 
+          ? "An email has been sent to you with instructions on how to reset your password." 
+          : "یک ایمیل با دستورالعمل‌های بازنشانی رمز عبور برای شما ارسال شده است."}
+        buttonText={language === "en" ? "Log In" : "ورود"}
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
       />
+
       <div className="authentication">
         <div className="container-fluid">
           <div className="row">
             <div className="col-5 halfForget">
               <p className="halfForget_title">
-                {language === "en" ? "Continue with your personalized health journey today" : 
-                  "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات رو ادامه بده."
+                {language === "en" 
+                  ? "Continue with your personalized health journey today" 
+                  : "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات رو ادامه بده."
                 }
               </p>
             </div>
+
             <div className="col-7">
               <form onSubmit={onsubmit} noValidate>
                 <img src={"./images/Logo.png"} alt="logo" />
+
                 <div className="mb-4">
-                  <label htmlFor="exampleInputPassword1" className="form-label">
-                    {language === "en" ? "Email" : "ایمیل" }
+                  <label htmlFor="emailInput" className="form-label">
+                    {language === "en" ? "Email" : "ایمیل"}
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="form-control"
-                    id="exampleInputPassword1"
+                    id="emailInput"
                     required
                   />
                 </div>
+
                 <button
                   type="submit"
                   className="btn btn-primary PassForgot"
@@ -156,15 +171,22 @@ export default function Forgotpassword() {
                   }}
                   disabled={isLoading}
                 >
-                  {isLoading ? <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }}/> : 
-                  (language === "en" ? "Reset Password →" : "بازنشانی رمز عبور ←" )
-                  }
+                  {isLoading 
+                    ? <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }}/>
+                    : (language === "en" ? "Reset Password →" : "بازنشانی رمز عبور ←")}
                 </button>
-                <p className="forgotpassword-status">{translateError(emailStatusKey)}</p>
+
+                {/* Show translated error only if exists */}
+                {emailStatusKey && (
+                  <p className="forgotpassword-status text-danger">
+                    {translateError(emailStatusKey)}
+                  </p>
+                )}
+
                 <div className="bottomText form-text">
-                  {language === "en" ? "Don't have an account?" : "حساب کاربری ندارید؟"} 
+                  {language === "en" ? "Don't have an account?" : "حساب کاربری ندارید؟"}{" "}
                   <Link to="/register">
-                    {language === "en" ? "Sign up" : " ثبت نام" }
+                    {language === "en" ? "Sign up" : " ثبت نام"}
                   </Link>
                 </div>
               </form>
