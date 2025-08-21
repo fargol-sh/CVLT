@@ -7,6 +7,66 @@ import PuffLoader from "react-spinners/PuffLoader";
 import { ConvertWebmToWav } from "./ConvertWebmToWav";
 import { useLanguage } from './LanguageContext';
 
+// file size limitation (5MB)
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+// validation for audio file
+const validateAudioFile = (file) => {
+  if (!file) return { valid: false, key: "noFile" };
+  if (file.size > MAX_FILE_SIZE_BYTES) return { valid: false, key: "fileTooLarge" };
+
+  const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/wav', 'audio/webm', 'audio/ogg'];
+  if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp3|m4a|wav|webm|ogg)$/i)) {
+    return { valid: false, key: "invalidFile" };
+  }
+
+  return { valid: true, key: null };
+};
+
+// validation for recorded blob
+const validateRecordedBlob = (blob) => {
+  if (!blob) return { valid: false, key: "noRecording" };
+  if (blob.size > MAX_FILE_SIZE_BYTES) return { valid: false, key: "recordingTooLarge" };
+  return { valid: true, key: null };
+};
+
+// translation dictionary for all error messages
+const errorMessages = {
+  noFile: {
+    en: "Please select an audio file",
+    fa: "لطفاً یک فایل صوتی انتخاب کنید"
+  },
+  fileTooLarge: {
+    en: `File size exceeds ${MAX_FILE_SIZE_MB} MB`,
+    fa: `حجم فایل از ${MAX_FILE_SIZE_MB} مگابایت بیشتر است`
+  },
+  invalidFile: {
+    en: "Please select a valid audio file (MP3, M4A, WAV, WebM, OGG)",
+    fa: "لطفاً یک فایل صوتی معتبر انتخاب کنید (MP3, M4A, WAV, WebM, OGG)"
+  },
+  noRecording: {
+    en: "Please record something first",
+    fa: "لطفاً ابتدا صدای خود را ضبط کنید"
+  },
+  recordingTooLarge: {
+    en: `Recording size exceeds ${MAX_FILE_SIZE_MB} MB`,
+    fa: `حجم ضبط از ${MAX_FILE_SIZE_MB} مگابایت بیشتر است`
+  },
+  uploadFailed: {
+    en: "Upload failed!",
+    fa: "آپلود موفقیت آمیز نبود!"
+  },
+  connectionError: {
+    en: "Connection error. Please try again.",
+    fa: "خطا در اتصال. لطفاً دوباره امتحان کنید."
+  },
+  conversionFailed: {
+    en: "Audio conversion failed. Please try again.",
+    fa: "تبدیل صدا ناموفق بود. لطفاً دوباره امتحان کنید."
+  }
+};
+
 export default function Test() {
   const [uploadState, setUploadState] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -17,8 +77,8 @@ export default function Test() {
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
 
-  // error message state
-  const [errorMessage, setErrorMessage] = useState("");
+  // store error key instead of raw string
+  const [errorKey, setErrorKey] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,66 +92,10 @@ export default function Test() {
     isRecording,
   } = useAudioRecorder();
 
-  // file size limitation (5MB)
-  const MAX_FILE_SIZE_MB = 5;
-  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-
-  // validation for audio file
-  const validateAudioFile = (file) => {
-    if (!file) {
-      return {
-        valid: false,
-        error: language === "en" ? "Please select an audio file" : "لطفاً یک فایل صوتی انتخاب کنید"
-      };
-    }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      return {
-        valid: false,
-        error: language === "en" 
-          ? `File size exceeds ${MAX_FILE_SIZE_MB} MB` 
-          : `حجم فایل از ${MAX_FILE_SIZE_MB} مگابایت بیشتر است`
-      };
-    }
-
-    const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/wav', 'audio/webm', 'audio/ogg'];
-    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp3|m4a|wav|webm|ogg)$/i)) {
-      return {
-        valid: false,
-        error: language === "en" 
-          ? "Please select a valid audio file (MP3, M4A, WAV, WebM, OGG)" 
-          : "لطفاً یک فایل صوتی معتبر انتخاب کنید (MP3, M4A, WAV, WebM, OGG)"
-      };
-    }
-
-    return { valid: true, error: null };
-  };
-
-  // validation for recorded blob
-  const validateRecordedBlob = (blob) => {
-    if (!blob) {
-      return {
-        valid: false,
-        error: language === "en" ? "Please record something first" : "لطفاً ابتدا صدای خود را ضبط کنید"
-      };
-    }
-
-    if (blob.size > MAX_FILE_SIZE_BYTES) {
-      return {
-        valid: false,
-        error: language === "en" 
-          ? `Recording size exceeds ${MAX_FILE_SIZE_MB} MB` 
-          : `حجم ضبط از ${MAX_FILE_SIZE_MB} مگابایت بیشتر است`
-      };
-    }
-
-    return { valid: true, error: null };
-  };
-
   // Display error
-  const showError = (message) => {
-    setErrorMessage(message);
-    setTimeout(() => setErrorMessage(""), 5000); // clear error message after 5 seconds
+  const showError = (key) => {
+    setErrorKey(key);
+    setTimeout(() => setErrorKey(null), 5000); // clear error after 5 sec
   };
 
   // Update test, round, and result path on route change
@@ -109,7 +113,7 @@ export default function Test() {
     setUploadState(false);
     setUploadedFile(null);
     setRecordedBlob(null);
-    setErrorMessage(""); // clear error messages
+    setErrorKey(null); // clear error
   }, [location]);
 
   useEffect(() => {
@@ -122,19 +126,19 @@ export default function Test() {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
       const validation = validateAudioFile(file);
-      
+
       if (!validation.valid) {
-        showError(validation.error);
+        showError(validation.key);
         return;
       }
 
       setUploadState(true);
       setUploadedFile(file);
-      setErrorMessage(""); // clear previous error messages
+      setErrorKey(null);
     }
-  }, [language]);
+  }, []);
 
-  const { getRootProps, getInputProps, open } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { "audio/*": [] },
     multiple: false,
@@ -145,13 +149,9 @@ export default function Test() {
       if (fileRejections.length > 0) {
         const rejection = fileRejections[0];
         if (rejection.errors.some(e => e.code === 'file-too-large')) {
-          showError(language === "en" 
-            ? `File size exceeds ${MAX_FILE_SIZE_MB} MB` 
-            : `حجم فایل از ${MAX_FILE_SIZE_MB} مگابایت بیشتر است`);
+          showError("fileTooLarge");
         } else if (rejection.errors.some(e => e.code === 'file-invalid-type')) {
-          showError(language === "en" 
-            ? "Please select a valid audio file" 
-            : "لطفاً یک فایل صوتی معتبر انتخاب کنید");
+          showError("invalidFile");
         }
       }
     }
@@ -167,12 +167,11 @@ export default function Test() {
       const response = await fetch("/api/tests/submit-audio", {
         method: "POST",
         body: formData,
-        credentials: "include" 
+        credentials: "include"
       });
 
       if (response.ok) {
         const resultData = await response.json();
-        // Go to the exact /tests/X/Y/result with the returned data
         navigate(`/profile/tests/${currentTest}/${currentRound}/result`, {
           state: {
             ...resultData,
@@ -182,12 +181,12 @@ export default function Test() {
         });
       } else {
         const errorData = await response.json();
-        showError(errorData.error || (language === "en" ? "Upload failed!" : "آپلود موفقیت آمیز نبود!"));
+        showError(errorData.error ? null : "uploadFailed");
       }
 
     } catch (error) {
       console.error(language === "en" ? "Error uploading audio:" : "خطا در آپلود صدا", error);
-      showError(language === "en" ? "Connection error. Please try again." : "خطا در اتصال. لطفاً دوباره امتحان کنید.");
+      showError("connectionError");
     }
 
     setLoading1(false);
@@ -199,7 +198,7 @@ export default function Test() {
 
     const validation = validateAudioFile(uploadedFile);
     if (!validation.valid) {
-      showError(validation.error);
+      showError(validation.key);
       return;
     }
 
@@ -212,7 +211,7 @@ export default function Test() {
 
     const validation = validateRecordedBlob(recordedBlob);
     if (!validation.valid) {
-      showError(validation.error);
+      showError(validation.key);
       return;
     }
 
@@ -220,11 +219,10 @@ export default function Test() {
 
     try {
       const wavBlob = await ConvertWebmToWav(recordedBlob);
-      
-      // validation after converting the recorded blob to Wav
+
       const wavValidation = validateRecordedBlob(wavBlob);
       if (!wavValidation.valid) {
-        showError(wavValidation.error);
+        showError(wavValidation.key);
         setLoading2(false);
         return;
       }
@@ -232,7 +230,7 @@ export default function Test() {
       await sendAudioToBackend(wavBlob);
     } catch (err) {
       console.error(language === "en" ? "Conversion failed:" : "تبدیل صدا ناموفق بود!", err);
-      showError(language === "en" ? "Audio conversion failed. Please try again." : "تبدیل صدا ناموفق بود. لطفاً دوباره امتحان کنید.");
+      showError("conversionFailed");
       setLoading2(false);
     }
   }
@@ -246,15 +244,15 @@ export default function Test() {
       const file = e.target.files[0];
       if (file) {
         const validation = validateAudioFile(file);
-        
+
         if (!validation.valid) {
-          showError(validation.error);
+          showError(validation.key);
           return;
         }
 
         setUploadState(true);
         setUploadedFile(file);
-        setErrorMessage("");
+        setErrorKey(null);
       }
     };
     input.click();
@@ -263,7 +261,7 @@ export default function Test() {
   return (
     <div className="testRound">
       {/* Error Message Display */}
-      {errorMessage && (
+      {errorKey && (
         <div className="row">
           <div className="col-12">
             <div className="alert alert-danger alert-dismissible fade show" role="alert" style={{
@@ -274,8 +272,8 @@ export default function Test() {
               maxWidth: '400px',
               direction: language === 'fa' ? 'rtl' : 'ltr'
             }}>
-              {errorMessage}
-              <button type="button" className="btn-close" onClick={() => setErrorMessage("")}></button>
+              {errorMessages[errorKey]?.[language] || errorKey}
+              <button type="button" className="btn-close" onClick={() => setErrorKey(null)}></button>
             </div>
           </div>
         </div>
@@ -285,27 +283,27 @@ export default function Test() {
       <div className="row pt-4">
         <div className="offset-md-1 col-md-1">
           <a href="/help" className="help" target="_blank">
-            {language === "en" ? "Help" : "راهنما" }
+            {language === "en" ? "Help" : "راهنما"}
           </a>
         </div>
       </div>
 
       {/* Test Audio */}
-      <div className="row pt-1 pb-5" style={{display: "flex", justifyContent: "center"}}>
+      <div className="row pt-1 pb-5" style={{ display: "flex", justifyContent: "center" }}>
         <div className="col-md-3">
           <audio controls key={`${currentTest}-${currentRound}`}>
             <source
-            src={`/static/audio/test${currentTest}.m4a`}  type="audio/x-m4a"
+              src={`/static/audio/test${currentTest}.m4a`} type="audio/x-m4a"
               preload="auto"
             />
           </audio>
-          <div className="text-center pt-2">{language === "en" ? "Round " : "دور "} {currentRound} 
+          <div className="text-center pt-2">{language === "en" ? "Round " : "دور "} {currentRound}
             {language === "en" ? " of 5" : " از 5"}</div>
         </div>
       </div>
 
       {/* Upload & Record Sections */}
-      <div className="row p-5" style={{display: "flex", justifyContent: "center"}}>
+      <div className="row p-5" style={{ display: "flex", justifyContent: "center" }}>
         {/* Upload Section */}
         <div className="col-md-5 text-center">
           <div className="upload" {...getRootProps()}>
@@ -316,18 +314,18 @@ export default function Test() {
               alt="upload"
             />
             <h6 className="uploadtitle">
-              {uploadState ? (language === "en" ? "Choose another file or drag and drop here" : "فایل دیگری انتخاب کنید") : 
-              (language === "en" ? "Select a file or drag and drop here" : "یک فایل انتخاب کرده یا یک فایل انتخاب کنید یا اینجا بکشید و رها کنید.")}
+              {uploadState ? (language === "en" ? "Choose another file or drag and drop here" : "فایل دیگری انتخاب کنید") :
+                (language === "en" ? "Select a file or drag and drop here" : "یک فایل انتخاب کرده یا اینجا بکشید و رها کنید.")}
             </h6>
             <p className="types text-muted">
-              {uploadState ? 
-                <span style={{fontSize: '12px'}}>
-                  {language === "en" ? `Selected: ${uploadedFile?.name} (${(uploadedFile?.size / (1024 * 1024)).toFixed(2)} MB)` : 
-                  `انتخاب شده: ${uploadedFile?.name} (${(uploadedFile?.size / (1024 * 1024)).toFixed(2)} مگابایت)`}
+              {uploadState ?
+                <span style={{ fontSize: '12px' }}>
+                  {language === "en" ? `Selected: ${uploadedFile?.name} (${(uploadedFile?.size / (1024 * 1024)).toFixed(2)} MB)` :
+                    `انتخاب شده: ${uploadedFile?.name} (${(uploadedFile?.size / (1024 * 1024)).toFixed(2)} مگابایت)`}
                   <br />
                   {language === "en" ? `Max size: ${MAX_FILE_SIZE_MB} MB` : `حداکثر حجم: ${MAX_FILE_SIZE_MB} مگابایت`}
                 </span>
-                : 
+                :
                 <span>
                   {language === "en" ? "MP3, M4A, OGG, WEBM and other audio files" : "MP3, M4A, OGG, WEBM و انواع فایل های دیگر"}
                   <br />
@@ -340,7 +338,7 @@ export default function Test() {
               className={`btn ${uploadState ? "UploadedBtn px-4" : "BrowseBtn"}`}
               onClick={handleFileSelect}
             >
-              {uploadState ? (language === "en" ? "Uploaded" : "آپلود شده" ) : (language === "en" ? "Browse" : "انتخاب فایل")}
+              {uploadState ? (language === "en" ? "Uploaded" : "آپلود شده") : (language === "en" ? "Browse" : "انتخاب فایل")}
             </button>
             <hr className="line mx-auto d-block" />
             <button
@@ -357,7 +355,7 @@ export default function Test() {
         <div className="col-md-5 text-center">
           <div className="upload">
             <h5 className="pb-3 pt-1">
-              {language === "en" ? "Record your sound" : "صدای خود را ضبط کنید" }
+              {language === "en" ? "Record your sound" : "صدای خود را ضبط کنید"}
             </h5>
             <div>
               <img
@@ -368,9 +366,9 @@ export default function Test() {
               />
             </div>
             {recordedBlob && (
-              <p className="text-muted" style={{fontSize: '12px'}}>
-                {language === "en" ? `Recorded: ${(recordedBlob.size / (1024 * 1024)).toFixed(2)} MB` : 
-                `ضبط شده: ${(recordedBlob.size / (1024 * 1024)).toFixed(2)} مگابایت`}
+              <p className="text-muted" style={{ fontSize: '12px' }}>
+                {language === "en" ? `Recorded: ${(recordedBlob.size / (1024 * 1024)).toFixed(2)} MB` :
+                  `ضبط شده: ${(recordedBlob.size / (1024 * 1024)).toFixed(2)} مگابایت`}
               </p>
             )}
             <hr className="line mx-auto d-block" />
