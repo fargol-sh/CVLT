@@ -17,7 +17,7 @@ export default function Test() {
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
 
-  // اضافه کردن state برای نمایش خطاها
+  // error message state
   const [errorMessage, setErrorMessage] = useState("");
 
   const location = useLocation();
@@ -32,11 +32,11 @@ export default function Test() {
     isRecording,
   } = useAudioRecorder();
 
-  // محدودیت حجم فایل (10 مگابایت)
+  // file size limitation (5MB)
   const MAX_FILE_SIZE_MB = 5;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-  // تابع validation برای فایل
+  // validation for audio file
   const validateAudioFile = (file) => {
     if (!file) {
       return {
@@ -67,7 +67,7 @@ export default function Test() {
     return { valid: true, error: null };
   };
 
-  // تابع validation برای blob ضبط شده
+  // validation for recorded blob
   const validateRecordedBlob = (blob) => {
     if (!blob) {
       return {
@@ -88,10 +88,10 @@ export default function Test() {
     return { valid: true, error: null };
   };
 
-  // تابع نمایش خطا
+  // Display error
   const showError = (message) => {
     setErrorMessage(message);
-    setTimeout(() => setErrorMessage(""), 5000); // پاک کردن خطا بعد از 5 ثانیه
+    setTimeout(() => setErrorMessage(""), 5000); // clear error message after 5 seconds
   };
 
   // Update test, round, and result path on route change
@@ -109,7 +109,7 @@ export default function Test() {
     setUploadState(false);
     setUploadedFile(null);
     setRecordedBlob(null);
-    setErrorMessage(""); // پاک کردن خطاها
+    setErrorMessage(""); // clear error messages
   }, [location]);
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export default function Test() {
 
       setUploadState(true);
       setUploadedFile(file);
-      setErrorMessage(""); // پاک کردن خطاهای قبلی
+      setErrorMessage(""); // clear previous error messages
     }
   }, [language]);
 
@@ -221,7 +221,7 @@ export default function Test() {
     try {
       const wavBlob = await ConvertWebmToWav(recordedBlob);
       
-      // Validation بعد از تبدیل
+      // validation after converting the recorded blob to Wav
       const wavValidation = validateRecordedBlob(wavBlob);
       if (!wavValidation.valid) {
         showError(wavValidation.error);
@@ -237,7 +237,7 @@ export default function Test() {
     }
   }
 
-  // تابع برای انتخاب فایل با کلیک
+  // Choose file handler
   const handleFileSelect = () => {
     const input = document.createElement('input');
     input.type = 'file';
