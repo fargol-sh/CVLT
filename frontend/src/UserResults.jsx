@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DataTable from "react-data-table-component";
 import { useLanguage } from './LanguageContext';
+import ProfileImageUpload from "./ProfileImageUpload";
+
 
 const BASE_URL = process.env.REACT_APP_API_URL;
 
@@ -52,7 +54,7 @@ const UserResults = () => {
         });
         const json = await res.json();
         if (res.ok) {
-          setAdminInfo(json);
+            setAdminInfo(json);
         }
       } catch (err) {
         console.error(language === "en" ? "Failed to fetch admin info:" : "خطا در واکشی اطلاعات ادمین", err);
@@ -81,7 +83,6 @@ const UserResults = () => {
       const response = await fetch(`/api/admin/user-results?${query}`);
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
         // group by username + test_number
         const grouped = {};
         result.forEach(item => {
@@ -130,6 +131,26 @@ const UserResults = () => {
     setFilters({ username: "", test_number: "", test_time: "" });
   };
 
+  // Handle Profile Picture
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('photo', file);
+    formData.append('user_id', adminInfo.id);
+
+    const res = await fetch('/api/upload-profile-photo', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      setAdminInfo(prev => ({ ...prev, profile_photo: result.photo }));
+    } else {
+      alert(language === "en" ? "Upload failed." : "خطا در آپلود!");
+    }
+  };
+
   return (
     <div className="container-fluid profile">
       <div className="row">
@@ -137,20 +158,11 @@ const UserResults = () => {
           className="col-1 sidebar px-0 pt-5 pb-5"
           style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
         >
-          <img
-            src={
-              adminInfo.profile_photo
-                ? `${BASE_URL}/static/profile_photos/${adminInfo.profile_photo}`
-                : "./images/profile.png"
-            }
-            className="rounded-circle"
-            style={{
-              width: "80px",
-              height: "80px",
-              objectFit: "cover",
-              border: "3px solid #5971d1",
-            }}
-            alt={language === "en" ? "profile" : "پروفایل"}
+          <ProfileImageUpload
+            onChange={handlePhotoChange}
+            source={adminInfo.profile_photo
+              ? `${BASE_URL}/static/profile_photos/${adminInfo.profile_photo}`
+              : "../images/profile.png"}
           />
           <h5 className="text-center">
             {language === "en" ? "admin" : "مدیر"}

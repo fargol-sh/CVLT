@@ -10,6 +10,7 @@ const UserProfileHome = () => {
   const [data, setData] = useState([]);
   const [userData, setUserData] = useState([]);
   const { language } = useLanguage();
+    console.log(userData);
 
   const columns = [
     {
@@ -140,7 +141,7 @@ const UserProfileHome = () => {
             onChange={handlePhotoChange}
             source={userData.profile_photo
               ? `${BASE_URL}/static/profile_photos/${userData.profile_photo}`
-              : "./images/profile.png"}
+              : "../images/profile.png"}
           />
           <h5 className="text-center">
             {userData.username ? userData.username : ""}
