@@ -264,14 +264,7 @@ export default function Test() {
       {errorKey && (
         <div className="row">
           <div className="col-12">
-            <div className="alert alert-danger alert-dismissible fade show" role="alert" style={{
-              position: 'fixed',
-              top: '20px',
-              right: '20px',
-              zIndex: 1000,
-              maxWidth: '400px',
-              direction: language === 'fa' ? 'rtl' : 'ltr'
-            }}>
+            <div className="audio-errors alert alert-danger alert-dismissible fade show" role="alert">
               {errorMessages[errorKey]?.[language] || errorKey}
               <button type="button" className="btn-close" onClick={() => setErrorKey(null)}></button>
             </div>

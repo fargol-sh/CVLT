@@ -16,6 +16,7 @@ export default function Result() {
 
   // parse URL to compute next path
   const [nextPath, setNextPath] = useState('/');
+
   const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Result() {
     }
     console.log(t, r);
   }, []);
-
+//////////////////////////////////////// NEW
   const handleButtonClick = () => {
     if (round_completed) {
       // نمایش پیام تکمیل تست
@@ -45,6 +46,7 @@ export default function Result() {
       navigate(nextPath);
     }
   };
+////////////////////////////////////////
 
   if (!state) {
     return <p>
@@ -59,25 +61,24 @@ export default function Result() {
 
   return (
     <div className="resultPage">
-{showCompletionMessage && (
-  <div className="completion-message" style={{
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#8ec2f2',
-    color: 'white',
-    padding: '20px 40px',
-    borderRadius: '10px',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    zIndex: 1000,
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-  }}>
-    {language === "en" ? `Test ${testNum} Completed!` : `تست ${testNum} تکمیل شد!`}
-  </div>
-)}
-      
+      {showCompletionMessage && (
+        <div className="completion-message" style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: '#8ec2f2',
+          color: 'white',
+          padding: '20px 40px',
+          borderRadius: '10px',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          zIndex: 1000,
+          boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+        }}>
+          {language === "en" ? `Test ${testNum} Completed!` : `تست ${testNum} تکمیل شد!`}
+        </div>
+      )}
       <div className="tests">
         <div className="container py-5">
           <div className="row pb-5" style={{display: "flex", justifyContent: "center"}}>
