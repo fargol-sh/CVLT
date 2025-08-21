@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { useState, useEffect } from "react";
 import ProfileImageUpload from "./ProfileImageUpload";
 import { useLanguage } from './LanguageContext';
 
@@ -11,66 +10,102 @@ const UserProfileHome = () => {
   const [data, setData] = useState([]);
   const [userData, setUserData] = useState([]);
   const { language } = useLanguage();
+    console.log(userData);
 
   const columns = [
     {
       name: (language === "en" ? "Test Number" : "شماره آزمون"),
-      selector: row => row.test_number, 
+      selector: row => row.test_number,
       sortable: true,
+      width: "150px",
     },
     {
-      name: (language === "en" ? "Test Round" : "شماره دور"),
-      selector: row => row.round_number,
+      name: (language === "en" ? "Round 1 Score" : "امتیاز دور ۱"),
+      selector: row => row.round1 ?? "-",
       sortable: true,
+      width: "160px",
     },
     {
-      name: (language === "en" ? "Score" : "امتیاز"),
-      selector: row => row.score,
+      name: (language === "en" ? "Round 2 Score" : "امتیاز دور ۲"),
+      selector: row => row.round2 ?? "-",
       sortable: true,
+      width: "160px",
     },
     {
-      name: (language === "en" ? "Test Time" : "تاریخ آزمون"),
-      selector: row => row.test_time,   
+      name: (language === "en" ? "Round 3 Score" : "امتیاز دور ۳"),
+      selector: row => row.round3 ?? "-",
       sortable: true,
-      width: "300px",
+      width: "160px",
+    },
+    {
+      name: (language === "en" ? "Round 4 Score" : "امتیاز دور ۴"),
+      selector: row => row.round4 ?? "-",
+      sortable: true,
+      width: "160px",
+    },
+    {
+      name: (language === "en" ? "Round 5 Score" : "امتیاز دور ۵"),
+      selector: row => row.round5 ?? "-",
+      sortable: true,
+      width: "160px",
+    },
+    {
+      name: (language === "en" ? "Test End Time" : "زمان پایان آزمون"),
+      selector: row => row.test_time,
+      sortable: true,
+      width: "220px",
     },
     {
       name: (language === "en" ? "Approved" : "تایید شده"),
-      selector: row => (row.approved === "Yes" ? (language === "en" ? "Yes" : "بله") : (language === "en" ? "No" : "خیر")),
+      selector: row =>
+        row.approved === "Yes"
+          ? (language === "en" ? "Yes" : "بله")
+          : (language === "en" ? "No" : "خیر"),
       sortable: true,
+      width: "120px",
     },
     {
       name: (language === "en" ? "Total Score" : "مجموع امتیاز"),
-      selector: row => row.total_score, 
+      selector: row => row.total_score,
       sortable: true,
+      width: "300px",
     },
   ];
 
-  // whenever filters change, re‑fetch
+  // whenever filters change, re-fetch
   useEffect(() => {
     const load = async () => {
       const qs = new URLSearchParams(filters).toString();
       const res = await fetch(`/api/user-profile?${qs}`);
       const result = await res.json();
-  
+
       if (res.ok) {
-        const mapped = result.scores.map((item, index) => ({
-          id: index + 1,
-          test_number: item.test_number,
-          round_number: item.round_number,
-          score: item.score,
-          test_time: new Date(item.test_time).toLocaleString(),
-          approved: item.approved,
-          total_score: item.total_score,
-        }));
-  
+        // group scores by test_number
+        const grouped = {};
+
+        result.scores.forEach(item => {
+          const testId = item.test_number;
+          if (!grouped[testId]) {
+            grouped[testId] = {
+              id: testId,
+              test_number: item.test_number,
+              test_time: new Date(item.test_time).toLocaleString(),
+              approved: item.approved,
+              total_score: item.total_score,
+            };
+          }
+          grouped[testId][`round${item.round_number}`] = item.score;
+          
+          // always update test_time to the latest round
+          grouped[testId].test_time = new Date(item.test_time).toLocaleString();
+        });
+
         setUserData(result.user);
-        setData(mapped);
+        setData(Object.values(grouped));
       }
     };
     load();
   }, [filters]);
-  
 
   const onChange = (e) => {
     setFilters(f => ({ ...f, [e.target.name]: e.target.value }));
@@ -83,7 +118,7 @@ const UserProfileHome = () => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('photo', file);
-    formData.append('user_id', userData.id); // Make sure you include user ID
+    formData.append('user_id', userData.id);
 
     const res = await fetch('/api/upload-profile-photo', {
       method: 'POST',
@@ -98,12 +133,16 @@ const UserProfileHome = () => {
     }
   };
 
-  
   return (
     <div className="container-fluid profile">
       <div className="row">
         <div className="col-1 sidebar px-0 pt-5 pb-5">
-          <ProfileImageUpload onChange={handlePhotoChange} source={userData.profile_photo ? `${BASE_URL}/static/profile_photos/${userData.profile_photo}` : "./images/profile.png"}/>
+          <ProfileImageUpload
+            onChange={handlePhotoChange}
+            source={userData.profile_photo
+              ? `${BASE_URL}/static/profile_photos/${userData.profile_photo}`
+              : "../images/profile.png"}
+          />
           <h5 className="text-center">
             {userData.username ? userData.username : ""}
           </h5>
@@ -111,14 +150,14 @@ const UserProfileHome = () => {
         <div className="col-11 py-5 px-5">
           <div className="px-2 py-5">
             <h3 className="mb-5">
-              {language === "en" ? "Test Results" : "نتایج آزمون ها" }
+              {language === "en" ? "Test Results" : "نتایج آزمون ها"}
             </h3>
             <form className="d-flex gap-1 mb-1" onSubmit={e => e.preventDefault()}>
               <input
                 name="test_number"
                 className="form-control search-input"
                 type="text"
-                placeholder={language === "en" ? "Filter By Test Number" : "فیلتر بر اساس شماره آزمون" }
+                placeholder={language === "en" ? "Filter By Test Number" : "فیلتر بر اساس شماره آزمون"}
                 onChange={onChange}
                 value={filters.test_number}
               />
@@ -130,7 +169,7 @@ const UserProfileHome = () => {
                 value={filters.test_time}
               />
               <button onClick={onReset} className="btn btn-primary px-3">
-                {language === "en" ? "Reset" : "حذف فیلترها" }
+                {language === "en" ? "Reset" : "حذف فیلترها"}
               </button>
             </form>
             <DataTable
@@ -148,6 +187,6 @@ const UserProfileHome = () => {
       </div>
     </div>
   );
-}
+};
 
 export default UserProfileHome;

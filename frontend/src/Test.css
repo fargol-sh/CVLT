@@ -120,3 +120,11 @@ audio {
   border-radius: 8px;
   outline: none;
 }
+
+.audio-errors {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+}

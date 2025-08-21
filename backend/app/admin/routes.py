@@ -112,6 +112,7 @@ def get_current_user():
             return jsonify({'error': 'Unauthorized'}), 401
 
         response = jsonify({
+            'id': current_user.id,
             'username': current_user.username,
             'profile_photo': current_user.profile_photo if hasattr(current_user, 'profile_photo') else None
         })

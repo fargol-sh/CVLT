@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "./LanguageContext";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+
 
 function AuthAlert({ title, alertText, buttonText, isVisible, onClose }) {
   const { language } = useLanguage();
@@ -21,10 +23,13 @@ function AuthAlert({ title, alertText, buttonText, isVisible, onClose }) {
                 <h5 className="modal-title">{title}</h5>
                 <button
                   type="button"
-                  className="btn-close"
+                  // className="btn-close"
+                  style={{border: "none", backgroundColor: "white"}}
                   aria-label="Close"
                   onClick={onClose}
-                />
+                >
+                  <AiOutlineCloseCircle size={25}/>
+                </button>
               </div>
               <div className="modal-body">{alertText}</div>
               <div className="modal-footer">
@@ -34,7 +39,7 @@ function AuthAlert({ title, alertText, buttonText, isVisible, onClose }) {
                   style={{ marginRight: "1rem", marginBottom: "2rem" }}
                   onClick={onClose}
                 >
-                  {language === "en" ? "Close" : "انصراف"}
+                  {language === "en" ? "Close" : "بستن"}
                 </button>
                 <Link to="/login" style={{ marginRight: "1rem", marginBottom: "2rem" }}>
                   <button

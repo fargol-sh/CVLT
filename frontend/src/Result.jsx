@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import DonutChart from 'react-donut-chart';
+// import DonutChart from 'react-donut-chart';
 import './Result.css';
 import { useLanguage } from './LanguageContext';
 
@@ -8,7 +8,7 @@ export default function Result() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const {
-    correct_words,
+    // correct_words,
     round_completed
   } = state || {};
 
@@ -16,7 +16,6 @@ export default function Result() {
 
   // parse URL to compute next path
   const [nextPath, setNextPath] = useState('/');
-  const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -31,53 +30,19 @@ export default function Result() {
     console.log(t, r);
   }, []);
 
-  const handleButtonClick = () => {
-    if (round_completed) {
-      // نمایش پیام تکمیل تست
-      setShowCompletionMessage(true);
-      
-      // بعد از یک ثانیه به صفحه بعدی برو
-      setTimeout(() => {
-        navigate(nextPath);
-      }, 2000);
-    } else {
-      // اگر تست تموم نشده، مستقیم به راند بعدی برو
-      navigate(nextPath);
-    }
-  };
-
   if (!state) {
     return <p>
       {language === "en" ? "Error: no result data" : "خطا: داده ای برای نتایج یافت نشد."}
     </p>;
   }
 
-  const percent = Math.round((correct_words / 16) * 100);
+  // const percent = Math.round((correct_words / 16) * 100);
 
   const testNum = Number(window.location.pathname.split('/')[3]);
   const roundNum = Number(window.location.pathname.split('/')[4]);
 
   return (
     <div className="resultPage">
-{showCompletionMessage && (
-  <div className="completion-message" style={{
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#8ec2f2',
-    color: 'white',
-    padding: '20px 40px',
-    borderRadius: '10px',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    zIndex: 1000,
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-  }}>
-    {language === "en" ? `Test ${testNum} Completed!` : `تست ${testNum} تکمیل شد!`}
-  </div>
-)}
-      
       <div className="tests">
         <div className="container py-5">
           <div className="row pb-5" style={{display: "flex", justifyContent: "center"}}>
@@ -87,7 +52,24 @@ export default function Result() {
                   {language === "en" ? `Test ${testNum} Round ${roundNum} Result` :
                    `نتیجه تست ${testNum} دور ${roundNum}`}
                 </h3>
-                <h4 className="text-muted pb-4">
+                {!round_completed ?
+                <h6 className={`text-muted pb-2 ${language === "en" ? "lh-md" : "lh-lg"}`} style={{whiteSpace: "pre-line"}}>
+                  {language === "en" ? 
+                    `You have finished this round. 
+                    \nClick "Next Round" to begin round ${roundNum + 1}` 
+                    : `شما این دور را به اتمام رساندید.
+                    روی گزینه «دور بعدی» کلیک کنید تا دور  ${roundNum + 1} ام آغاز شود.`
+                  }
+                </h6> : 
+                <h6 className={`text-muted pb-2 ${language === "en" ? "lh-md" : "lh-lg"}`} style={{whiteSpace: "pre-line"}}>
+                  {language === "en" ? 
+                    `‌You have finished test ${testNum}. You can see the results in your profile page.` 
+                    : `شما این آزمون را به اتمام رساندید.
+                    می توانید نتایج آزمون را در صفحه پروفایل خود مشاهده کنید.`
+                  }
+                </h6> 
+                }
+                {/* <h4 className="text-muted pb-4">
                   {language === "en" ? "You have scored:" : "امتیاز به دست آمده:"}
                 </h4>
                 <h5>{language === "en" ? `${correct_words} / 16` : `16 / ${correct_words}`}</h5>
@@ -109,17 +91,24 @@ export default function Result() {
                   legend={false}
                   strokeColor="#8ec2f2"
                   interactive={false}
-                />
+                /> */}
               </div>
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-center gap-3">
                 <button
                   className="btn cardBtn px-5 py-2"
-                  onClick={handleButtonClick}
-                  disabled={showCompletionMessage}
+                  onClick={() => { navigate(nextPath); }}
+                  disabled={round_completed}
                 >
                   {round_completed ? (language === "en" ? "Finish" : "پایان") :
                    (language === "en" ? "Next Round" : "دور بعدی")}
                 </button>
+                {round_completed && 
+                <button
+                  className="btn cardBtn px-5 py-2"
+                  onClick={() => { navigate('/profile'); }}
+                >
+                  {(language === "en" ? "Go to profile" : "رفتن به پروفایل")}
+                </button>}
               </div>
             </div>
           </div>
