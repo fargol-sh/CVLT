@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useContext } from "react";
 import "./Home.css";
 import { AuthContext } from "./AuthContext";
 import { useLanguage } from './LanguageContext';
@@ -11,14 +11,7 @@ import { FaHeadSideVirus } from "react-icons/fa6";
 
 export default function Home() {
   const { logged } = useContext(AuthContext);
-  const [height, setHeight] = useState(0);
-  const ref = useRef(null);
-
   const { language } = useLanguage();
-
-  useEffect(() => {
-    setHeight(ref.current.clientHeight);
-  }, []);
 
   return (
     <div>
@@ -66,7 +59,7 @@ export default function Home() {
             {/* Feature Cards Section */}
             <div className="col-12 col-md-6">
               <div className="row">
-                <div className="col-12 col-sm-6 mb-4" ref={ref}>
+                <div className="col-12 col-sm-6 mb-4">
                   <div className="feature-card">
                     <div className="feature-card__icon">
                       <FaHeadSideVirus size={25}/>
