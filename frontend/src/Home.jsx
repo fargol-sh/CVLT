@@ -52,23 +52,22 @@ export default function Home() {
       <div id="section1">
         <div className="container py-5">
           <div className="row">
-            <div
-              className="col-6 pe-5"
-              style={{ marginTop: `${height / 3.3}px` }}
-            >
+            {/* Text Section */}
+            <div className="col-12 col-md-6 pe-md-5 mb-4 mb-md-0">
               <div className="boderDiv"></div>
-              <h2 style={{lineHeight: "3rem"}}>
+              <h2>
                 {language === "en" ? "Our Tests Evaluate Your Verbal Learning And More" : "آزمایش‌های ما توانایی حافظه‌ ات در به‌خاطر سپردن کلمات و چیزهای دیگه رو ارزیابی می‌کنن."}
               </h2>
-              <p style={{fontSize: "0.9rem", lineHeight: "1.8rem"}}>
+              <p>
                 {language === "en" ? "Beside Evaluating you verbal learning, our tests can be a valuable tool for improving cognitive skills, enhancing learning strategies, and achieving academic success." 
                 : "علاوه‌ بر سنجش حافظه‌ ات برای به‌خاطر سپردن کلمات، آزمون‌های ما می‌تونن ابزار ارزشمندی برای تقویت مهارت‌های ذهنی، بهبود روش‌های یادگیری و موفقیت در درس و تحصیل باشن."}
               </p>
             </div>
-            <div className="col-6">
+            {/* Feature Cards Section */}
+            <div className="col-12 col-md-6">
               <div className="row">
-                <div className="col-6" ref={ref}>
-                  <div className="feature-card" style={{marginBottom: "2rem"}}>
+                <div className="col-12 col-sm-6 mb-4" ref={ref}>
+                  <div className="feature-card">
                     <div className="feature-card__icon">
                       <FaHeadSideVirus size={25}/>
                     </div>
@@ -80,6 +79,9 @@ export default function Home() {
                       {language === "en" ? "Tests improve memory by strengthening the neural pathways" : "آزمون‌ها با تقویت مسیرهای عصبی، باعث بهبود حافظه می‌شن."}
                     </p>
                   </div>
+                </div>
+                
+                <div className="col-12 col-sm-6 mb-4">
                   <div className="feature-card">
                     <div className="feature-card__icon">
                       <BsClipboard2DataFill size={25}/>
@@ -93,10 +95,8 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-                <div
-                  className="col-6"
-                  style={{ marginTop: `${height / 3.8}px` }}
-                >
+
+                <div className="col-12 mb-4">
                   <div className="feature-card">
                     <div className="feature-card__icon">
                       <GiBrain size={30}/>
