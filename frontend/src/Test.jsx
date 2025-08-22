@@ -67,6 +67,37 @@ const errorMessages = {
   }
 };
 
+// ترجمه خطاهای سرور
+const translateServerError = (serverError, language) => {
+  // نقشه ترجمه خطاهای رایج سرور
+  const serverErrorTranslations = {
+    "متن قابل تشخیصی در فایل صوتی یافت نشد. لطفاً مجدداً تلاش کنید.": {
+      en: "No recognizable text found in the audio file. Please try again.",
+      fa: "متن قابل تشخیصی در فایل صوتی یافت نشد. لطفاً مجدداً تلاش کنید."
+    },
+    "خطا در پردازش فایل صوتی": {
+      en: "Error processing audio file",
+      fa: "خطا در پردازش فایل صوتی"
+    },
+    "فایل صوتی نامعتبر است": {
+      en: "Invalid audio file",
+      fa: "فایل صوتی نامعتبر است"
+    },
+    "مشکل در ارتباط با سرویس تشخیص صدا": {
+      en: "Problem connecting to speech recognition service",
+      fa: "مشکل در ارتباط با سرویس تشخیص صدا"
+    }
+  };
+
+  // اگر ترجمه‌ای برای این خطا وجود داشت، آن را برگردان
+  if (serverErrorTranslations[serverError]) {
+    return serverErrorTranslations[serverError][language] || serverError;
+  }
+
+  // اگر ترجمه نداشت، خطای اصلی را برگردان
+  return serverError;
+};
+
 export default function Test() {
   const [uploadState, setUploadState] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -79,6 +110,8 @@ export default function Test() {
 
   // store error key instead of raw string
   const [errorKey, setErrorKey] = useState(null);
+  // جدید: برای خطاهای سرور
+  const [serverError, setServerError] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -95,7 +128,15 @@ export default function Test() {
   // Display error
   const showError = (key) => {
     setErrorKey(key);
+    setServerError(null); // پاک کردن خطای سرور
     setTimeout(() => setErrorKey(null), 5000); // clear error after 5 sec
+  };
+
+  // جدید: نمایش خطای سرور
+  const showServerError = (message) => {
+    setServerError(message);
+    setErrorKey(null); // پاک کردن خطای معمولی
+    setTimeout(() => setServerError(null), 5000);
   };
 
   // Update test, round, and result path on route change
@@ -114,6 +155,7 @@ export default function Test() {
     setUploadedFile(null);
     setRecordedBlob(null);
     setErrorKey(null); // clear error
+    setServerError(null); // جدید
   }, [location]);
 
   useEffect(() => {
@@ -135,6 +177,7 @@ export default function Test() {
       setUploadState(true);
       setUploadedFile(file);
       setErrorKey(null);
+      setServerError(null); // جدید
     }
   }, []);
 
@@ -180,8 +223,16 @@ export default function Test() {
           },
         });
       } else {
+        // اصلاح شده: مدیریت درست خطاهای سرور
         const errorData = await response.json();
-        showError(errorData.error ? null : "uploadFailed");
+        
+        if (errorData.error) {
+          // ترجمه و نمایش خطای دریافتی از سرور
+          const translatedError = translateServerError(errorData.error, language);
+          showServerError(translatedError);
+        } else {
+          showError("uploadFailed");
+        }
       }
 
     } catch (error) {
@@ -253,6 +304,7 @@ export default function Test() {
         setUploadState(true);
         setUploadedFile(file);
         setErrorKey(null);
+        setServerError(null); // جدید
       }
     };
     input.click();
@@ -260,13 +312,20 @@ export default function Test() {
 
   return (
     <div className="testRound">
-      {/* Error Message Display */}
-      {errorKey && (
+      {/* Error Message Display - اصلاح شده */}
+      {(errorKey || serverError) && (
         <div className="row">
           <div className="col-12">
             <div className="audio-errors alert alert-danger alert-dismissible fade show" role="alert">
-              {errorMessages[errorKey]?.[language] || errorKey}
-              <button type="button" className="btn-close" onClick={() => setErrorKey(null)}></button>
+              {serverError || errorMessages[errorKey]?.[language] || errorKey}
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => {
+                  setErrorKey(null);
+                  setServerError(null);
+                }}
+              ></button>
             </div>
           </div>
         </div>
