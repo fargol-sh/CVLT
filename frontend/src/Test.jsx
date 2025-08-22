@@ -67,9 +67,8 @@ const errorMessages = {
   }
 };
 
-// ترجمه خطاهای سرور
+// server error translations
 const translateServerError = (serverError, language) => {
-  // نقشه ترجمه خطاهای رایج سرور
   const serverErrorTranslations = {
     "متن قابل تشخیصی در فایل صوتی یافت نشد. لطفاً مجدداً تلاش کنید.": {
       en: "No recognizable text found in the audio file. Please try again.",
@@ -89,12 +88,12 @@ const translateServerError = (serverError, language) => {
     }
   };
 
-  // اگر ترجمه‌ای برای این خطا وجود داشت، آن را برگردان
+  // If there is a translation for the error, return it
   if (serverErrorTranslations[serverError]) {
     return serverErrorTranslations[serverError][language] || serverError;
   }
 
-  // اگر ترجمه نداشت، خطای اصلی را برگردان
+  // If there is not a translation for the error, return the error itself
   return serverError;
 };
 
@@ -110,7 +109,8 @@ export default function Test() {
 
   // store error key instead of raw string
   const [errorKey, setErrorKey] = useState(null);
-  // جدید: برای خطاهای سرور
+
+  // server error state
   const [serverError, setServerError] = useState(null);
 
   const location = useLocation();
@@ -128,14 +128,13 @@ export default function Test() {
   // Display error
   const showError = (key) => {
     setErrorKey(key);
-    setServerError(null); // پاک کردن خطای سرور
-    setTimeout(() => setErrorKey(null), 5000); // clear error after 5 sec
+    setServerError(null);
+    setTimeout(() => setErrorKey(null), 5000);
   };
 
-  // جدید: نمایش خطای سرور
   const showServerError = (message) => {
     setServerError(message);
-    setErrorKey(null); // پاک کردن خطای معمولی
+    setErrorKey(null); 
     setTimeout(() => setServerError(null), 5000);
   };
 
@@ -155,7 +154,7 @@ export default function Test() {
     setUploadedFile(null);
     setRecordedBlob(null);
     setErrorKey(null); // clear error
-    setServerError(null); // جدید
+    setServerError(null); // clear server error
   }, [location]);
 
   useEffect(() => {
@@ -177,7 +176,7 @@ export default function Test() {
       setUploadState(true);
       setUploadedFile(file);
       setErrorKey(null);
-      setServerError(null); // جدید
+      setServerError(null);
     }
   }, []);
 
@@ -223,11 +222,10 @@ export default function Test() {
           },
         });
       } else {
-        // اصلاح شده: مدیریت درست خطاهای سرور
         const errorData = await response.json();
         
         if (errorData.error) {
-          // ترجمه و نمایش خطای دریافتی از سرور
+          // show & translate server errors
           const translatedError = translateServerError(errorData.error, language);
           showServerError(translatedError);
         } else {
@@ -312,7 +310,6 @@ export default function Test() {
 
   return (
     <div className="testRound">
-      {/* Error Message Display - اصلاح شده */}
       {(errorKey || serverError) && (
         <div className="row">
           <div className="col-12">
