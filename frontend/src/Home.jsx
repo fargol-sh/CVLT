@@ -111,7 +111,7 @@ export default function Home() {
 
       <div id="section2">
         <div className="container">
-          <div className="row">
+          <div className="row gap-2">
             <div className="col">
               <h1>4</h1>
               <h4>
@@ -147,8 +147,8 @@ export default function Home() {
           
         </h4>
         <div className="container">
-          <div className="row">
-            <div className="col-4">
+          <div className="row g-4 d-flex justify-content-center">
+            <div className="col-12 col-md-6 col-lg-4">
               <div className="testimonial">
                 <p className="testimonial__text">
                   {language === "en" ?
@@ -161,7 +161,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="col-4">
+            <div className="col-12 col-md-6 col-lg-4">
               <div className="testimonial">
                 <p className="testimonial__text">
                   {language === "en" ? "The CVLT is a well-stablished and reliable test of verbal learning and memory. It is a valuable tool for assessing cognitive function."
@@ -173,7 +173,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="col-4">
+            <div className="col-12 col-md-6 col-lg-4">
               <div className="testimonial">
                 <p className="testimonial__text">
                   {language === "en" ? "The CVLT is a well-normed test that can be used to compare an individual's performance to that of others in their age group." 
@@ -226,11 +226,11 @@ export default function Home() {
               </i>{" "}
               <a
                 className="footerATag"
-                href="mailto:fargolshirvanifar@outlook.com"
+                href="mailto:neurorecall@outlook.com"
                 target="_blank"
                 rel="noreferrer"
               >
-                fargolshirvanifar@outlook.com
+                neurorecall@outlook.com
               </a>
             </div>
           </div>
