@@ -1,3 +1,8 @@
+/* ============================ */
+/* src/components/Navbar.css */
+/* ============================ */
+
+/* ===== Base look ===== */
 .NavbarHome {
   font-size: 18px !important;
   background-image: linear-gradient(
@@ -16,12 +21,8 @@
   background-color: #f9f9f9;
 }
 
-.navbarBrand {
-  font-size: 25px;
-  font-weight: 600;
-  padding-inline-end: 0.75rem; /* replaces pe-3 effect */
-}
-
+/* Keep alias for old typo to prevent breakage */
+.HomeBackground,
 .HomeBackgrond {
   background-color: transparent !important;
 }
@@ -30,14 +31,17 @@
   background-color: #f9f9f9 !important;
 }
 
-.HomeLinkColor {
-  color: #ffffff !important;
+/* Link/brand colors pinned by route */
+.HomeLinkColor { color: #ffffff !important; }
+.GeneralLinkColor { color: #2d4059 !important; }
+
+.navbarBrand {
+  font-size: 25px;
+  font-weight: 600;
+  padding-inline-end: 0.75rem;
 }
 
-.GeneralLinkColor {
-  color: #2d4059 !important;
-}
-
+/* Primary CTA in navbar */
 .navbarBtn {
   background-color: #8ec2f2;
   border-radius: 0.3rem;
@@ -45,35 +49,107 @@
   border: #8ec2f2;
   font-weight: 500;
 }
-
 .navbarBtn:hover {
   background-color: #fff;
   color: #8ec2f2 !important;
 }
 
+/* List & item spacing */
 .nav-ul {
   padding-right: 0;
   margin-right: 0;
 }
-
 .nav-item {
-  transition: all .2s;
-  padding-inline-end: 1rem; /* new */
+  transition: transform 0.2s ease;
+  padding-inline-end: 1rem;
 }
-
 .nav-item:hover {
   transform: scale(1.05);
 }
 
+/* Language toggle adopts link color via extra class in JSX */
 .language-toggle {
   border: none;
+  background: transparent;
   font-weight: 500;
   border-radius: 0.3rem;
   font-size: 1rem;
-  padding-block: 0.5rem; /* vertical padding */
-  padding-inline: 1rem; /* horizontal padding */
-  transition: all .2s;
+  padding-block: 0.6rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  cursor: pointer; /* why: improves discoverability on desktop */
 }
-.language-toggle:hover {
-  background-color: #8ec2f2;
+
+/* Add icon spacing that respects RTL/LTR */
+.nav-ico {
+  margin-inline-end: 0.5rem; /* keeps equal start spacing in both directions */
+  vertical-align: middle;
+}
+
+/* ===== Hamburger visibility tweaks =====
+   Bootstrap sets the icon via .navbar-dark/.navbar-light.
+   We only add border adjustments here for clarity. */
+.navbar-dark .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.navbar-light .navbar-toggler {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(142, 194, 242, 0.35); /* why: visible focus state */
+}
+
+/* ===== Responsive: Mobile (<768px) ===== */
+@media (max-width: 767.98px) {
+  .navbarBrand {
+    font-size: 22px;
+  }
+
+  .nav-item {
+    padding-inline-end: 0; /* tighter in stacked mode */
+  }
+
+  .navbar .nav-link {
+    padding-block: 0.75rem; /* larger tap targets */
+    font-size: 1rem;
+  }
+
+  .language-toggle {
+    display: inline-flex;
+    align-items: center;
+    width: 100%; /* easier to tap */
+  }
+
+  .navbarBtn {
+    width: 100%; /* prominent CTA */
+    margin-block: 0.25rem 0.5rem;
+  }
+
+  /* Space between the two nav groups when collapsed */
+  .navbar-collapse {
+    gap: 0.5rem;
+  }
+
+  .navbar-nav { padding: 0}
+}
+
+/* ===== Responsive: Tablet (768px–991.98px) ===== */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .navbarBrand {
+    font-size: 24px;
+  }
+  .nav-item {
+    padding-inline-end: 0.5rem;
+  }
+  .navbar .nav-link {
+    padding-block: 0.5rem;
+  }
+  .navbar-nav { padding: 0}
+}
+
+/* ===== Responsive: Desktop (≥992px) ===== */
+@media (min-width: 992px) {
+  .nav-item {
+    padding-inline-end: 1rem;
+  }
 }
