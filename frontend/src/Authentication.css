@@ -26,11 +26,11 @@
 .authentication .half {
   background: no-repeat url(../public/images/Login.png);
   background-size: cover;
+  background-position: center; /* keeps focal point across sizes */
 }
 
 .half_title {
   color: white;
-  margin: 3rem 3rem;
   text-align: center;
 }
 
@@ -193,3 +193,54 @@
 }
 
 .confirm-password { margin-bottom: 1rem;}
+
+/* ========================= */
+/* Responsive enhancements  */
+/* ========================= */
+
+/* Mobile (<768px) */
+@media (max-width: 767.98px) {
+  .authentication .auth-row { padding: 0 0; }
+
+  .authentication .row { padding: 6% 6% 6% 6%; }
+
+  .authentication .half {
+    min-height: 220px; /* ensures the hero feels present on phones */
+    align-items: center;
+  }
+
+  .half_title {
+    margin: 1.5rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 2rem;
+  }
+
+  .authentication form { padding: 8% 7% 6% 7%; }
+  .authentication form img.auth-logo { max-width: 160px; height: auto; padding-bottom: 10%; }
+
+  .authentication .auth-submit { width: 100%; }
+
+  .bottomText { margin: 12% auto 4% auto; }
+}
+
+/* Tablet (768px–991.98px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .authentication .auth-row { padding: 0 0; }
+
+  .authentication .row { padding: 5% 8%; }
+
+  .authentication .half { min-height: 280px; align-items: center; }
+
+  .half_title { margin: 2rem 2rem; font-size: 1.05rem; }
+
+  .authentication form { padding: 9% 8% 6% 8%; }
+
+  .authentication form img.auth-logo { max-width: 180px; height: auto; padding-bottom: 12%; }
+}
+
+/* Desktop (≥992px) */
+@media (min-width: 992px) {
+  .authentication .half { min-height: 100%; }
+  .authentication .half_title { margin-top: 2rem; }
+  .authentication form img.auth-logo { max-width: 200px; height: auto; }
+}
