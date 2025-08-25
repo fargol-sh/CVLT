@@ -108,7 +108,7 @@ export default function Login() {
   return (
     <div className="authentication" dir={language === "en" ? "ltr" : "rtl"}>
       <div className="container-fluid">
-        <div className="row align-items-stretch auth-row">
+        <div id="login" className="row align-items-stretch auth-row">
           {/* Hero image/text panel */}
           <div className="col-12 col-lg-5 half d-flex justify-content-center">
             <p className="half_title">
@@ -119,10 +119,9 @@ export default function Login() {
           </div>
 
           {/* Form panel */}
-          <div className="col-12 col-lg-7 mt-4 mt-lg-0 auth-row">
+          <div className="col-12 col-lg-7 mt-4 mt-lg-0">
             <form onSubmit={onsubmit} className="auth-form">
               <img src={"./images/Logo.png"} alt="logo" className="auth-logo" />
-
               <div className="mb-3">
                 <label htmlFor="usernameInput" className="form-label">
                   {language === "en" ? "Username" : "نام کاربری"}

@@ -455,20 +455,20 @@ export default function Register() {
   
   return (
     <Fragment>
-      <div className="authentication">
+      <div className="authentication" dir={language === 'en' ? 'ltr' : 'rtl'}>
         <div className="container-fluid">
-          <div className="row">
-            <div className="col-5 halfRegister">
+          <div className="row auth-row">
+            <div className="col-12 col-lg-5 halfRegister d-flex justify-content-center">
               <p className="halfRegister_title">
                 {language === "en" ? "Get started with your personalized health journey today" : 
                   "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات را آغاز کن."
                 }
               </p>
             </div>
-            <div className="col-6">
+            <div className="col-12 col-lg-6">
               <form id="register" className="row" onSubmit={onsubmit} noValidate>
-                <div className="col-md-12 pt-5">
-                  <img src={"./images/Logo.png"} alt="logo" />
+                <div className="col-12 pt-4 pt-lg-5 text-center">
+                  <img className="auth-logo" src={"./images/Logo.png"} alt="logo" />
                 </div>
                 
                 <div className="col-md-6">
@@ -648,31 +648,33 @@ export default function Register() {
                 
                 {/* Status message with proper styling */}
                 {registerStatus && (
-                  <div className="col-md-12 mb-3">
-                    <div className={getStatusClass()}>
+                  <div className="col-12 mb-2">
+                    <div className={getStatusClass()} role="status" aria-live="polite">
                       {registerStatus}
                     </div>
                   </div>
                 )}
                 
-                <button
-                  type="submit"
-                  className="btn btn-primary signUpBtn"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }}/>
-                  ) : (
-                    language === "en" ? "Sign Up →" : "ثبت نام ←"
-                  )}
-                </button>
+                <div className="col-12">
+                  <button
+                    type="submit"
+                    className="btn btn-primary signUpBtn auth-submit"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }}/>
+                    ) : (
+                      language === "en" ? "Sign Up →" : "ثبت نام ←"
+                    )}
+                  </button>
+                </div>
                 
-                <div className="bottomText form-text">
+                <div className="bottomText form-text col-12">
                   {language === "en" ? "Already have an account?" : "حساب کاربری دارید؟"}{" "}
                   <Link to="/login">
                     {language === "en" ? "Sign in" : "ورود"}
