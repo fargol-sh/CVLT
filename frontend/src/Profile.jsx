@@ -9,15 +9,13 @@ export default function Profile() {
 
   if (isLoading) {
     return <div>Loading...</div>;
-  }
-    console.log(logged);
-    
-    return (
-      <Fragment>
-        {logged ? 
-        (isAdmin ? <AdminProfile /> : <UserProfile />)
-          : <p>You are not logged in!</p>
-        }
-      </Fragment>
-    );
+  }    
+  return (
+    <Fragment>
+      {logged ? 
+      (isAdmin ? <AdminProfile /> : <UserProfile />)
+        : <p>You are not logged in!</p>
+      }
+    </Fragment>
+  );
 }
