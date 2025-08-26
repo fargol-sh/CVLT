@@ -12,7 +12,7 @@ export default function ResetPassword() {
     // UI States
     const [resetPasswordStatus, setResetPasswordStatus] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [isModalVisible, setIsModalVisible] = useState(true);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [statusType, setStatusType] = useState(""); // "error", "success", "info"
 
     // Keep a bilingual payload so status can react to language changes
