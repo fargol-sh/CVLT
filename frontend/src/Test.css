@@ -128,3 +128,39 @@ audio {
   z-index: 1000;
   max-width: 400px;
 }
+
+/* ========================= */
+/* Responsive enhancements   */
+/* ========================= */
+
+/* RTL/LTR aware alert placement */
+.testRound[dir="rtl"] .audio-errors { right: auto; left: 20px; }
+
+/* Make CTAs full-width on phones */
+.test-action { min-width: 160px; }
+@media (max-width: 767.98px) {
+  .test-action { width: 100%; }
+}
+
+/* Upload padding & line width tuning */
+@media (max-width: 767.98px) { /* Mobile */
+  .upload { padding: 10% 6%; }
+  .line { width: 85%; }
+  .help { height: 72px; width: 72px; margin: 1.5rem auto; }
+  .startRecord { height: 120px; }
+  .startRecordingmod { height: 140px; }
+  .audio-errors { left: 10px; right: 10px; max-width: none; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) { /* Tablet */
+  .upload { padding: 8% 5%; }
+  .line { width: 78%; }
+  .help { height: 84px; width: 84px; margin: 2rem; }
+  .startRecord { height: 140px; }
+  .startRecordingmod { height: 160px; }
+}
+
+@media (min-width: 992px) { /* Desktop */
+  .upload { padding: 8% 6%; }
+  .line { width: 70%; }
+}

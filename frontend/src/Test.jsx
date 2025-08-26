@@ -1,3 +1,4 @@
+// src/components/Test.jsx
 import React, { useCallback, useEffect, useState } from "react";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 import "./Test.css";
@@ -302,18 +303,18 @@ export default function Test() {
         setUploadState(true);
         setUploadedFile(file);
         setErrorKey(null);
-        setServerError(null); // جدید
+        setServerError(null);
       }
     };
     input.click();
   };
 
   return (
-    <div className="testRound">
+    <div className="testRound" dir={language === 'en' ? 'ltr' : 'rtl'}>
       {(errorKey || serverError) && (
         <div className="row">
           <div className="col-12">
-            <div className="audio-errors alert alert-danger alert-dismissible fade show" role="alert">
+            <div className="audio-errors alert alert-danger alert-dismissible fade show" role="alert" aria-live="polite">
               {serverError || errorMessages[errorKey]?.[language] || errorKey}
               <button 
                 type="button" 
@@ -330,16 +331,16 @@ export default function Test() {
 
       {/* Help Button */}
       <div className="row pt-4">
-        <div className="offset-md-1 col-md-1">
-          <a href="/help" className="help" target="_blank">
+        <div className="col-12 col-md-2 offset-md-1 d-flex justify-content-center justify-content-md-start">
+          <a href="/help" className="help" target="_blank" rel="noreferrer">
             {language === "en" ? "Help" : "راهنما"}
           </a>
         </div>
       </div>
 
       {/* Test Audio */}
-      <div className="row pt-1 pb-5" style={{ display: "flex", justifyContent: "center" }}>
-        <div className="col-md-3">
+      <div className="row pt-1 pb-5 justify-content-center">
+        <div className="col-12 col-sm-8 col-md-6 col-lg-3">
           <audio controls key={`${currentTest}-${currentRound}`}>
             <source
               src={`/static/audio/test${currentTest}.m4a`} type="audio/x-m4a"
@@ -352,9 +353,9 @@ export default function Test() {
       </div>
 
       {/* Upload & Record Sections */}
-      <div className="row p-5" style={{ display: "flex", justifyContent: "center" }}>
+      <div className="row px-3 px-md-5 py-4 gy-4 justify-content-center">
         {/* Upload Section */}
-        <div className="col-md-5 text-center">
+        <div className="col-12 col-lg-5 text-center">
           <div className="upload" {...getRootProps()}>
             <input {...getInputProps()} />
             <img
@@ -384,14 +385,14 @@ export default function Test() {
             </p>
             <button
               type="button"
-              className={`btn ${uploadState ? "UploadedBtn px-4" : "BrowseBtn"}`}
+              className={`btn ${uploadState ? "UploadedBtn px-4" : "BrowseBtn"} test-action`}
               onClick={handleFileSelect}
             >
               {uploadState ? (language === "en" ? "Uploaded" : "آپلود شده") : (language === "en" ? "Browse" : "انتخاب فایل")}
             </button>
             <hr className="line mx-auto d-block" />
             <button
-              className="btn cardBtn mt-3"
+              className="btn cardBtn mt-3 test-action"
               onClick={handleUploadSubmit}
               disabled={loading1 || loading2}
             >
@@ -401,7 +402,7 @@ export default function Test() {
         </div>
 
         {/* Record Section */}
-        <div className="col-md-5 text-center">
+        <div className="col-12 col-lg-5 text-center">
           <div className="upload">
             <h5 className="pb-3 pt-1">
               {language === "en" ? "Record your sound" : "صدای خود را ضبط کنید"}
@@ -422,7 +423,7 @@ export default function Test() {
             )}
             <hr className="line mx-auto d-block" />
             <button
-              className="btn cardBtn mt-3"
+              className="btn cardBtn mt-3 test-action"
               onClick={handleRecordSubmit}
               disabled={loading1 || loading2}
             >
