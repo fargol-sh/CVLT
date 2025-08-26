@@ -120,7 +120,7 @@ export default function Forgotpassword() {
   };
 
   return (
-    <main>
+    <main dir={language === 'en' ? 'ltr' : 'rtl'}>
       {/* Success Alert */}
       <AuthAlert
         title={language === "en" ? "Reset Password" : "بازنشانی رمز عبور"}
@@ -134,9 +134,9 @@ export default function Forgotpassword() {
 
       <div className="authentication">
         <div className="container-fluid">
-          <div className="row">
-            <div className="col-5 halfForget">
-              <p className="halfForget_title">
+          <div className="row align-items-stretch">
+            <div className="col-12 col-lg-5 halfForgot d-flex justify-content-center">
+              <p className="halfForgot_title">
                 {language === "en" 
                   ? "Continue with your personalized health journey today" 
                   : "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات رو ادامه بده."
@@ -144,9 +144,9 @@ export default function Forgotpassword() {
               </p>
             </div>
 
-            <div className="col-7">
+            <div id="forgot-password" className="col-12 col-lg-7 mt-4 mt-lg-0">
               <form onSubmit={onsubmit} noValidate>
-                <img src={"./images/Logo.png"} alt="logo" />
+                <img src={"./images/Logo.png"} alt="logo" className="auth-logo"/>
 
                 <div className="mb-4">
                   <label htmlFor="emailInput" className="form-label">
@@ -159,18 +159,20 @@ export default function Forgotpassword() {
                     className="form-control"
                     id="emailInput"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="btn btn-primary PassForgot"
+                  className="btn btn-primary PassForgot auth-submit"
                   style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}
                   disabled={isLoading}
+                  aria-disabled={isLoading}
                 >
                   {isLoading 
                     ? <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }}/>
@@ -179,7 +181,7 @@ export default function Forgotpassword() {
 
                 {/* Show translated error only if exists */}
                 {emailStatusKey && (
-                  <p className="forgotpassword-status text-danger">
+                  <p className="forgotpassword-status text-danger" aria-live="polite">
                     {translateError(emailStatusKey)}
                   </p>
                 )}

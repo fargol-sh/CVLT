@@ -34,12 +34,13 @@
   text-align: center;
 }
 
-.authentication .halfForget {
+.authentication .halfForgot {
   background: no-repeat url(../public/images/Forget.png);
   background-size: cover;
+  background-position: center; /* keeps focal point across sizes */
 }
 
-.halfForget_title {
+.halfForgot_title {
   color: white;
   margin: 2rem 3rem;
   text-align: center;
@@ -203,37 +204,74 @@
 
 /* Mobile (<768px) */
 @media (max-width: 767.98px) {
-.authentication .row { padding: 6% 6%; }
-.authentication #login.row > * { padding: 0; }
-.authentication .half { min-height: 220px; align-items: center; }
-.authentication .halfRegister { 
-  min-height: 220px; display: flex; align-items: center; margin-bottom: 2rem;}
-.half_title { margin: 1.5rem 1.25rem; font-size: 0.9rem; line-height: 2rem; }
-.halfRegister_title { margin: 1.5rem 1.25rem; font-size: 0.95rem; line-height: 1.9rem; }
-.authentication form { padding: 8% 7% 6% 7%; }
-.authentication form img.auth-logo { max-width: 160px; height: auto; padding-bottom: 10%; }
-.authentication .auth-submit { width: 100%; }
-.bottomText { margin: 12% auto 4% auto; }
-.authentication .halfRegister { margin-right: 0; }
+  /* Common */
+  .authentication .row { padding: 6% 6%; }
+  .authentication form { padding: 8% 7% 6% 7%; }
+  .authentication form img.auth-logo { max-width: 160px; height: auto; padding-bottom: 10%; }
+  .authentication .auth-submit { width: 100%; }
+  .bottomText { margin: 12% auto 4% auto; }
+
+  /* Login component */
+  .authentication #login.row > * { padding: 0; }
+  .authentication .half { min-height: 220px; align-items: center; }
+  .half_title { margin: 1.5rem 1.25rem; font-size: 0.9rem; line-height: 2rem; }
+
+  /* Register component */
+  .authentication .halfRegister { 
+    min-height: 220px; display: flex; align-items: center; margin-bottom: 2rem;}
+  .authentication .halfRegister { margin-right: 0; }
+  .halfRegister_title { margin: 1.5rem 1.25rem; font-size: 0.95rem; line-height: 1.9rem; }
+
+  /* ForgotPassword */
+  .authentication .halfForgot {
+    min-height: 220px; /* keeps hero visible on phones */
+    display: flex;
+    align-items: center;
+  }
+  .halfForgot_title { margin: 1.5rem 1.25rem; font-size: 0.95rem; line-height: 1.9rem; }
+  .authentication #forgot-password { padding: 0; }
+
+  /* ResetPassword */
+  .authentication #reset-password { padding: 0; }
 }
 
 
 /* Tablet (768px–991.98px) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-.authentication .row { padding: 5% 8%; }
-.authentication #login.row > * { padding: 0; }
-.authentication .half { min-height: 280px; align-items: center; }
-.authentication .halfRegister { margin-bottom: 2rem; min-height: 280px; display: flex; align-items: center; }
-.half_title { margin: 2rem 2rem; font-size: 1.05rem; }
-.halfRegister_title { margin: 2rem 2rem; font-size: 1.05rem; }
-.authentication form { padding: 9% 8% 6% 8%; }
-.authentication form img.auth-logo { max-width: 180px; height: auto; padding-bottom: 12%; }
+  /* Common */
+  .authentication .row { padding: 5% 8%; }
+  .authentication form { padding: 9% 8% 6% 8%; }
+  .authentication form img.auth-logo { max-width: 180px; height: auto; padding-bottom: 12%; }
+
+  /* Login */
+  .authentication #login.row > * { padding: 0; }
+  .authentication .half { min-height: 280px; align-items: center; }
+  .half_title { margin: 2rem 2rem; font-size: 1.05rem; }
+
+  /* Register */
+  .halfRegister_title { margin: 2rem 2rem; font-size: 1.05rem; }
+  .authentication .halfRegister { margin-bottom: 2rem; min-height: 280px; display: flex; align-items: center; }
+
+  /* ForgotPassword */
+  .authentication .halfForgot {
+    min-height: 280px; /* balanced hero on tablets */
+    display: flex;
+    align-items: center;
+  }
+  .halfForgot_title { margin: 2rem 2rem; font-size: 1.05rem; }
+  .authentication #forgot-password { padding: 0; }
+
+  /* ResetPassword */
+  .authentication #reset-password { padding: 0; }
 }
 
 
 /* Desktop (≥992px) */
 @media (min-width: 992px) {
-.authentication .half { min-height: 100%; }
-.authentication .half_title { margin-top: 2rem; }
-.authentication form img.auth-logo { max-width: 200px; height: auto; }
+  /* Login */
+  .authentication .half { min-height: 100%; }
+  .authentication .half_title { margin-top: 2rem; }
+  /* ForgotPassword */
+  .authentication .halfForgot { min-height: 100%; }
+  .authentication form img.auth-logo { max-width: 200px; height: auto; }
 }
