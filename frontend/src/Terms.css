@@ -1,6 +1,93 @@
 .TermsandConditions {
-  margin: 10% auto;
+  margin: 6% auto; /* was 10% */
   font-size: 25px;
   text-align: center;
   color: #2d4059;
+}
+
+/* Page wrapper (match app palette) */
+.terms-page { background: #d5deed; min-height: 80vh; display: flex; align-items: flex-start; }
+
+/* Card container (same visual language as Help) */
+.terms-card {
+  margin: 0 auto;
+  max-width: 920px;
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.08);
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.terms-header { margin-bottom: .5rem; }
+.terms-title { font-size: clamp(1.35rem, 3.2vw, 2rem); margin: 0 0 .25rem; }
+.terms-subtitle { font-size: clamp(.9rem, 2.2vw, 1rem); opacity: .8; margin: 0; }
+
+/* Grid list */
+.terms-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .75rem;
+}
+
+.terms-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: .85rem;
+  text-align: start;
+  padding: .85rem 1rem;
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 12px;
+  background: #f9fbfe;
+}
+
+.term-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #eef6ff; color: #235366; font-size: 20px;
+}
+
+.term-title { font-size: clamp(1rem, 2.4vw, 1.1rem); margin: 0; }
+.term-desc  { font-size: clamp(.85rem, 2vw, .95rem); opacity: .8; margin: .25rem 0 0; }
+
+/* Subtle hint */
+.terms-hint {
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .95rem;
+  padding: .5rem .75rem;
+  border-radius: 10px;
+  background: #f4f8ff;
+  color: #235366;
+}
+
+/* RTL adjustments */
+[dir="rtl"] .terms-list { direction: rtl; }
+[dir="rtl"] .terms-item { text-align: right; }
+
+/* Responsive tweaks */
+@media (max-width: 767.98px) {
+  .TermsandConditions { margin: 4% auto; font-size: 18px; }
+  .terms-card { padding: 1rem; border-radius: 14px; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .TermsandConditions { margin: 5% auto; font-size: 22px; }
+}
+
+@media (min-width: 992px) {
+  .terms-list { grid-template-columns: 1fr 1fr; }
+  /* Center the lone last card when items count is odd (LTR & RTL) */
+  .terms-list .terms-item:last-child:nth-child(odd) {
+    grid-column: 1 / -1; /* span both columns */
+    justify-self: center; /* center within the spanned track */
+    max-width: 560px;
+  }
 }
