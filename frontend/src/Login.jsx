@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState, useContext } from "react";
 import "./Authentication.css";
 import { useNavigate, Link } from "react-router-dom";
@@ -11,7 +12,7 @@ export default function Login() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [rawLoginStatus, setRawLoginStatus] = useState(""); // store untranslated error
+  const [rawLoginStatus, setRawLoginStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const { language } = useLanguage();
@@ -19,8 +20,10 @@ export default function Login() {
   const translateError = (errorMessage) => {
     if (!errorMessage) return "";
     if (language === "fa") {
-      if ( errorMessage.includes("This username does not exist") ||
-        errorMessage.includes("Password is wrong")) {
+      if (
+        errorMessage.includes("This username does not exist") ||
+        errorMessage.includes("Password is wrong")
+      ) {
         const attempts = errorMessage.match(/(\d+) attempts remaining/);
         return attempts
           ? `رمز عبور نادرست است. ${attempts[1]} تلاش باقی مانده.`
@@ -78,7 +81,10 @@ export default function Login() {
           setRawLoginStatus("");
         }
       } else if (response.status === 401) {
-        const errorMessage = data.error === "Non-existent username" ? "This username does not exist." : `Password is wrong! (${data.error})`;
+        const errorMessage =
+          data.error === "Non-existent username"
+            ? "This username does not exist."
+            : `Password is wrong! (${data.error})`;
         setRawLoginStatus(errorMessage);
         console.log(errorMessage);
       } else if (response.status === 429) {
@@ -100,19 +106,22 @@ export default function Login() {
   };
 
   return (
-    <div className="authentication">
+    <div className="authentication" dir={language === "en" ? "ltr" : "rtl"}>
       <div className="container-fluid">
-        <div className="row">
-          <div className="col-5 half">
+        <div id="login" className="row align-items-stretch auth-row">
+          {/* Hero image/text panel */}
+          <div className="col-12 col-lg-5 half d-flex justify-content-center">
             <p className="half_title">
               {language === "en"
                 ? "Continue with your personalized health journey today"
                 : "امروز مسیر شخصی‌سازی‌شده سلامتی‌ات رو ادامه بده."}
             </p>
           </div>
-          <div className="col-7">
-            <form onSubmit={onsubmit}>
-              <img src={"./images/Logo.png"} alt="logo" />
+
+          {/* Form panel */}
+          <div className="col-12 col-lg-7 mt-4 mt-lg-0">
+            <form onSubmit={onsubmit} className="auth-form">
+              <img src={"./images/Logo.png"} alt="logo" className="auth-logo" />
               <div className="mb-3">
                 <label htmlFor="usernameInput" className="form-label">
                   {language === "en" ? "Username" : "نام کاربری"}
@@ -123,14 +132,14 @@ export default function Login() {
                   className="form-control"
                   id="usernameInput"
                   onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  inputMode="text"
                   required
                 />
               </div>
+
               <div className="mb-3">
-                <label
-                  htmlFor="exampleInputPassword1"
-                  className="form-label"
-                >
+                <label htmlFor="exampleInputPassword1" className="form-label">
                   {language === "en" ? "Password" : "رمز عبور"}
                 </label>
                 <input
@@ -139,54 +148,41 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="form-control"
                   id="exampleInputPassword1"
+                  autoComplete="current-password"
                   required
                 />
               </div>
+
               <div
                 id="PasswordHelp"
-                className="form-text"
-                style={{
-                  textAlign: language === "en" ? "right" : "left",
-                }}
+                className="form-text PassForgot"
+                style={{ textAlign: language === "en" ? "right" : "left" }}
               >
                 <Link to="/forgotpassword">
-                  {language === "en"
-                    ? "Forgot Password?"
-                    : "پسورد خود را فراموش کرده اید؟"}
+                  {language === "en" ? "Forgot Password?" : "پسورد خود را فراموش کرده اید؟"}
                 </Link>
               </div>
+
               <button
                 type="submit"
-                className="btn btn-primary"
+                className="btn btn-primary auth-submit"
                 disabled={isLoading}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
               >
                 {isLoading ? (
-                  <PuffLoader
-                    size={25}
-                    color="#fff"
-                    cssOverride={{ marginBottom: "0px" }}
-                  />
+                  <PuffLoader size={25} color="#fff" cssOverride={{ marginBottom: "0px" }} />
                 ) : language === "en" ? (
                   "Login →"
                 ) : (
                   "ورود ←"
                 )}
               </button>
-              <p className="login-status">
-                {translateError(rawLoginStatus)}
-              </p>
+
+              <p className="login-status" aria-live="polite">{translateError(rawLoginStatus)}</p>
+
               <div className="bottomText form-text">
-                {language === "en"
-                  ? "Don't have an account?"
-                  : "حساب کاربری ندارید؟"}
-                <Link to="/register">
-                  {language === "en" ? " Sign up" : " ثبت نام"}
-                </Link>
+                {language === "en" ? "Don't have an account?" : "حساب کاربری ندارید؟"}
+                <Link to="/register">{language === "en" ? " Sign up" : " ثبت نام"}</Link>
               </div>
             </form>
           </div>
@@ -195,3 +191,4 @@ export default function Login() {
     </div>
   );
 }
+

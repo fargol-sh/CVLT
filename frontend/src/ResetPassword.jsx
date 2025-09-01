@@ -303,7 +303,7 @@ export default function ResetPassword() {
     };
 
     return (
-        <main>
+        <main dir={language === 'en' ? 'ltr' : 'rtl'}>
             <Fragment>
                 <AuthAlert
                     title={language === "en" ? "Reset Password" : "بازنشانی رمز عبور"}
@@ -314,12 +314,12 @@ export default function ResetPassword() {
                 />
                 <div className="authentication">
                     <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-5 half"></div>
-                            <div className="col-7">
+                        <div className="row align-items-stretch">
+                            <div className="col-12 col-lg-5 half" />
+                            <div id="reset-password" className="col-12 col-lg-7 mt-4 mt-lg-0"> 
                                 <form onSubmit={onsubmit} noValidate>
                                     {/* Absolute path for image */}
-                                    <img src="/images/Logo.png" alt="logo" />
+                                    <img src="/images/Logo.png" alt="logo" className="auth-logo" />
                                     
                                     <div className="mb-4">
                                         <label htmlFor="newPassword" className="form-label">
@@ -372,7 +372,7 @@ export default function ResetPassword() {
                                     {/* Status message with proper styling */}
                                     {resetPasswordStatus && (
                                     <div className="col-md-12 mb-3">
-                                        <div className={getStatusClass()}>
+                                        <div className={getStatusClass()} role="status" aria-live="polite">
                                         {resetPasswordStatus}
                                         </div>
                                     </div>
@@ -380,8 +380,9 @@ export default function ResetPassword() {
 
                                     <button
                                         type="submit"
-                                        className="btn btn-primary PassForgot"
+                                        className="btn btn-primary PassForgot auth-submit"
                                         disabled={isLoading}
+                                        aria-disabled={isLoading}
                                         style={{
                                             display: "flex",
                                             alignItems: "center",

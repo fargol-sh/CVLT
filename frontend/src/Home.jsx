@@ -18,14 +18,14 @@ export default function Home() {
       <div className="header">
         <div>
           <h1 className="pb-2 mb-5">
-            {language === "en" ? "Take control of your" : "کنترل مسیر سلامتیت رو"}
+            {language === "en" ? "Take control of your" : "کنترل مسیر سلامتی خود را"}
             <br />
-            {language === "en" ? "health journey" : "به دست بگیر!"}
+            {language === "en" ? "health journey" : "به دست بگیرید!"}
           </h1>
           <h3 className="pb-2" style={{lineHeight: "2rem"}}>
-            {language === "en" ? "Test your verbal learning and gain confidence" : "قدرت حافظه ات رو بسنج"}
+            {language === "en" ? "Test your verbal learning and gain confidence" : "قدرت حافظه خود را بسنجید"}
             <br />
-            {language === "en" ? "in your healthcare decisions" : "و با اطمینان بیشتری درباره سلامتیت تصمیم بگیر!"}
+            {language === "en" ? "in your healthcare decisions" : "و با اطمینان بیشتری درباره سلامتی خود تصمیم بگیرید!"}
           </h3>
 
           {logged ? (
@@ -49,11 +49,11 @@ export default function Home() {
             <div className="col-12 col-md-6 pe-md-5 mb-4 mb-md-0">
               <div className="boderDiv"></div>
               <h2>
-                {language === "en" ? "Our Tests Evaluate Your Verbal Learning And More" : "آزمایش‌های ما توانایی حافظه‌ ات در به‌خاطر سپردن کلمات و چیزهای دیگه رو ارزیابی می‌کنن."}
+                {language === "en" ? "Our Tests Evaluate Your Verbal Learning And More" : "آزمایش‌های ما توانایی حافظه‌ شما را در به‌خاطر سپردن کلمات ارزیابی می‌کنند."}
               </h2>
               <p>
                 {language === "en" ? "Beside Evaluating you verbal learning, our tests can be a valuable tool for improving cognitive skills, enhancing learning strategies, and achieving academic success." 
-                : "علاوه‌ بر سنجش حافظه‌ ات برای به‌خاطر سپردن کلمات، آزمون‌های ما می‌تونن ابزار ارزشمندی برای تقویت مهارت‌های ذهنی، بهبود روش‌های یادگیری و موفقیت در درس و تحصیل باشن."}
+                : "علاوه‌ بر سنجش حافظه‌ شما برای به‌خاطر سپردن کلمات، آزمون‌های ما می‌توانند ابزار ارزشمندی برای تقویت مهارت‌های ذهنی، بهبود روش‌های یادگیری و موفقیت در درس و تحصیل باشند."}
               </p>
             </div>
             {/* Feature Cards Section */}
@@ -69,7 +69,7 @@ export default function Home() {
                     </p>
                     <div className="feature-card__separator"></div>
                     <p className="feature-card__description">
-                      {language === "en" ? "Tests improve memory by strengthening the neural pathways" : "آزمون‌ها با تقویت مسیرهای عصبی، باعث بهبود حافظه می‌شن."}
+                      {language === "en" ? "Tests improve memory by strengthening the neural pathways" : "آزمون‌ها با تقویت مسیرهای عصبی، باعث بهبود حافظه می‌شوند."}
                     </p>
                   </div>
                 </div>
@@ -84,7 +84,7 @@ export default function Home() {
                     </p>
                     <div className="feature-card__separator"></div>
                     <p className="feature-card__description">
-                      {language === "en" ? "You can identify your strong areas and areas that can be improved" : "می‌تونی بخش‌هایی از حافظه‌ت رو که قوی هستن بشناسی و قسمت‌هایی رو که نیاز به تقویت دارن، مشخص کنی."}
+                      {language === "en" ? "You can identify your strong areas and areas that can be improved" : "می‌توانید بخش‌هایی از حافظه‌ خود را که قوی هستند بشناسید و قسمت‌هایی را که نیاز به تقویت دارند، مشخص کنید."}
                     </p>
                   </div>
                 </div>
@@ -99,7 +99,7 @@ export default function Home() {
                     </p>
                     <div className="feature-card__separator"></div>
                     <p className="feature-card__description">
-                      {language === "en" ? "Regular engagement in tests can improve processing speed" : "شرکت منظم در آزمون‌ها می‌تونه سرعت پردازش ذهن رو افزایش بده." }
+                      {language === "en" ? "Regular engagement in tests can improve processing speed" : "شرکت منظم در آزمون‌ها می‌تواند سرعت پردازش ذهن را افزایش دهد." }
                     </p>
                   </div>
                 </div>
@@ -208,7 +208,7 @@ export default function Home() {
               </a>
             </div>
             <div className="col-4">
-              <h4>{language === "en" ? "Get in Touch" : "با ما در تماس باش"}</h4>
+              <h4>{language === "en" ? "Get in Touch" : "با ما در تماس باشید"}</h4>
               <i>
                 <img src={"./images/GPS.png"} alt="gps" />
               </i>{" "}
